@@ -18,21 +18,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # NOTE: this workflow intentionally does NOT run `npm ci` / `npm run build`.
+      # @walmart/ld-kit is a private package resolved only via Walmart's internal
+      # Artifactory registry/proxy (see mmc-phase1a-prototype/.npmrc) — a public
+      # GitHub Actions runner has no route to it and `npm ci` fails outright
+      # (exit code 1). Instead, the build output is produced locally with
+      # `npm run build:pages` and committed to mmc-phase1a-prototype/dist,
+      # and this job just publishes that committed artifact as-is.
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: mmc-phase1a-prototype/package-lock.json
-
-      - name: Install dependencies
-        working-directory: mmc-phase1a-prototype
-        run: npm ci
-
-      - name: Build
-        working-directory: mmc-phase1a-prototype
-        run: npm run build
 
       - uses: actions/configure-pages@v5
 

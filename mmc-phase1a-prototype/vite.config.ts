@@ -5,9 +5,12 @@ import fs from "node:fs";
 
 export default defineConfig({
   // GitHub Pages serves this app from /mmc-rewards-phase1a-v2/ (repo-name
-  // subpath, not domain root) when built via the Actions workflow — only
-  // apply the base path for that build, never for local dev.
-  base: process.env.GITHUB_ACTIONS ? "/mmc-rewards-phase1a-v2/" : "/",
+  // subpath, not domain root). The Pages workflow no longer builds in CI
+  // (see .github/workflows/deploy-pages.yml — @walmart/ld-kit is a private
+  // package unreachable from public runners), so this build is run locally
+  // via `npm run build:pages` and the resulting dist/ is committed. Local
+  // `npm run dev`/`npm run build` stay rooted at "/".
+  base: process.env.DEPLOY_TARGET === "pages" ? "/mmc-rewards-phase1a-v2/" : "/",
   server: {
     port: 3099,
   },
