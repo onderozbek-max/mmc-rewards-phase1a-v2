@@ -1,0 +1,387 @@
+---
+description: Accessibility is the default. Non-accessible patterns require an explicit, justified opt-out. Read this BEFORE writing any UI code.
+globs:
+alwaysApply: true
+---
+
+# Accessibility — Binding Directive
+
+This is THE canonical accessibility rule file for this project. Read it before every code-generation task. Nothing ships without meeting these invariants.
+
+## Core Principle
+
+**Accessibility is the DEFAULT.** Non-accessible output requires an EXPLICIT, JUSTIFIED opt-out — a prop literally named `unsafeDecorative` with a required `reason: string`. If you find yourself reaching for `unsafeDecorative`, STOP and ask the user first.
+
+The components in `@walmart/ld-kit` enforce the a11y invariants they can. The runtime scanner mounted in `src/App.tsx` enforces the rest — it throws into the Vite dev overlay when any commonly-slipped defect lands in the DOM. If you run `npm run dev` and see a full-screen error starting with `LD a11y:` or `A11Y:`, you introduced an a11y regression — fix it, don't suppress it.
+
+### How to discover violations without a browser
+
+The scanner POSTs every violation set to `/__ld_a11y_report` on the Vite dev server. A dev-only plugin:
+
+1. **Prints a red banner to `npm run dev` stdout** with numbered violations. If you started the dev server with `run_in_background=true`, check its output.
+2. **Writes the latest report to `.ld-a11y-report.json`** at the project root. After exercising the app, run `cat .ld-a11y-report.json` to see the current violation set in JSON.
+3. **Serves the live snapshot at** `GET http://localhost:<port>/__ld_a11y_report`. Use `curl` to check without opening a browser.
+
+If the scanner never fires, the app may not have rendered — ensure you've loaded the page at least once (`curl http://localhost:<port>/` or open it in a browser / automation tool). The scanner runs inside the browser, so the page must be visited for violations to surface.
+
+### Fix requests from the browser panel
+
+When a user clicks **"Copy prompt → paste to AI"** in the in-browser a11y log panel (footer, per-card, or the proactive popover nudge) — or the page crosses the auto-fire threshold in `useFixRequest.ts` — the scanner copies the prompt to the clipboard AND writes a structured fix request to `.ld-fix-request.md` at the project root (plus a machine-readable `.ld-fix-request.json` sibling). This file is an agent-ready prompt with YAML frontmatter and a numbered list of violations to fix.
+
+**If `.ld-fix-request.md` exists, you MUST read it and act on it immediately.** Each violation entry includes the rule, severity, element selector, a **`Source:` line with the exact `file:line`** (resolved from the React fiber — jump straight there when present), the technical description, and the fix instruction. After fixing each violation:
+
+1. Save the source file(s) — HMR will reload and the scanner will re-run.
+2. Verify the violation is gone by checking `.ld-a11y-report.json` or `curl http://localhost:<port>/__ld_a11y_report`.
+3. Once all violations in the request are resolved, delete `.ld-fix-request.md` (and `.ld-fix-request.json`) — though the dev server also auto-clears both once the same page re-scans clean, so this is a fallback, not the only path.
+
+The fix request file is the bridge between the browser and your agent session. Treat it like a direct instruction from the user.
+
+**External contract note:** `.wibey/hooks/` scripts (UserPromptSubmit / SessionStart / Stop) in the builder repo read these exact filenames and JSON shapes — they are not part of this repo's diff, so the coupling is verbal. The filenames, JSON shapes, and write/auto-clear conditions are documented at the top of `vite/a11y-dev-server-plugin.ts` — check there (and update both sides) before renaming or restructuring either file.
+
+## Hard Rules
+
+### Images and media
+
+- MUST use `<Image src="…" alt="…">` from `@walmart/ld-kit`. NEVER use raw `<img>` elements.
+- `alt` MUST be a meaningful description of what the image conveys. Short. Concrete. No "image of", no filename, no placeholder.
+- NEVER write `alt=""`, `alt="image"`, `alt="photo"`, or `alt="..."` — the runtime rejects these.
+- If (and only if) the image is PURELY decorative (visual flourish that adds nothing a screen reader user needs), MUST pass `unsafeDecorative={{ reason: "<why>" }}`. Ask the user before using this.
+
+```tsx
+// CORRECT — meaningful alt
+<Image src={photoUrl} alt="3-in-1 Blender with glass pitcher" />
+
+// CORRECT — decorative only, with justification
+<Image src={heroFlourish} unsafeDecorative={{ reason: "aesthetic hero pattern" }} />
+
+// WRONG — raw <img>
+<img src={photoUrl} alt="3-in-1 Blender" />
+
+// WRONG — placeholder alt
+<Image src={photoUrl} alt="..." />
+<Image src={photoUrl} alt="" />
+<Image src={photoUrl} alt="image" />
+```
+
+### Icons
+
+- Icons that carry meaning (status, action type, affordance) MUST have `a11yLabel`.
+- Icons next to a text label that already describes the action MUST pass `decorative` (the icon is then `aria-hidden`).
+- NEVER leave a standalone icon without either `a11yLabel` or `decorative`.
+
+```tsx
+// CORRECT — labeled standalone status icon
+<Icon name="Warning" a11yLabel="Error" />
+
+// CORRECT — decorative icon next to a text label
+<Button leading={<Icon name="Truck" decorative />}>Free shipping</Button>
+
+// WRONG — standalone icon with no label and no decorative flag
+<Icon name="Warning" />
+```
+
+**Trend/direction icons** (e.g. `Metric`'s up/down arrow): the label must describe direction AND sentiment ONLY — never repeat the metric's own name, which is already announced by the surrounding label. `Metric` already derives this correctly from `variant` (leave `a11yTrendIndicatorLabel` unset); if you build a custom trend indicator, follow the same convention.
+
+| Icon | Context | Correct label |
+|------|---------|---------------|
+| Arrow up | Good outcome (e.g. revenue up) | `"Trending up — positive"` |
+| Arrow down | Good outcome (e.g. cost down) | `"Trending down — positive"` |
+| Arrow up | Bad outcome (e.g. complaints up) | `"Trending up — negative"` |
+| Arrow down | Bad outcome (e.g. sales down) | `"Trending down — negative"` |
+
+```tsx
+// CORRECT
+<Icon name="ArrowUp" a11yLabel="Trending up — positive" />
+
+// WRONG — repeats the metric name, not the icon's meaning
+<Icon name="ArrowUp" a11yLabel="Points earned this month" />
+```
+
+### Interactive elements
+
+- MUST use `Button`, `IconButton`, `LinkButton`, or `Link` for interactive elements.
+- NEVER add `onClick` / `onKeyDown` / `role="button"` to a `<div>`, `<span>`, `<li>`, `<td>`, or any non-interactive element.
+- NEVER build an icon-only button with `<button>` + icon — use `IconButton` (it requires `a11yLabel`).
+- For a whole-card click target, wrap the card in an `<a href>` or a `<Button>` so ONE real interactive element receives the click. Do not wrap the card in `onClick`.
+- **Visible selection state implies interactivity.** If an element shows it is "active", "selected", or "current" via a border, background, checkmark, or any other visual signal, it MUST be a real interactive element (`<button>`, `<a>`, `Button`, `IconButton`, etc.) with `aria-pressed` / `aria-current` / `aria-selected` and a keyboard handler. NEVER render a non-interactive `<div>` / `<span>` / `<li>` carrying selected-state styling — sighted users will (correctly) try to click it, and keyboard / screen-reader users will have no way to operate it. A common offender is a thumbnail strip on a PDP: each thumbnail with an "active" border MUST be a `<button aria-pressed>` with `onClick`, not a styled `<div role="img">`.
+
+```tsx
+// CORRECT — icon-only action
+<IconButton a11yLabel="Add to favorites"><Icon name="Heart" decorative /></IconButton>
+
+// CORRECT — entire card is a link
+<a href={productUrl} aria-label={product.name}>
+  <Card>{/* content */}</Card>
+</a>
+
+// WRONG — clickable div
+<div onClick={handleClick}>…</div>
+
+// WRONG — bare button with icon child, no label
+<button><Icon name="Heart" /></button>
+```
+
+### Pages and landmarks
+
+- Every page MUST be wrapped in `<Page title="…">` from `@walmart/ld-kit`. It renders the skip link, the `<main>` landmark, and the single page `<h1>` for you.
+- **Exactly ONE `<Page>` per app.** The page module that represents the active route owns the `<Page>` — `App.tsx` MUST NOT render its own `<Page>` around it. Two `<Page>` wrappers produce two `<main>` landmarks and two `<h1>` elements; the runtime a11y scanner will throw and assistive tech navigation breaks.
+- There MUST be exactly ONE `<h1>` per page. `<Page>` owns it. If you want a different VISIBLE page heading (e.g., rendered by a `Header` pattern or a hero), pass `titleVisuallyHidden` to `<Page>` and render your visible heading as an `<h2>`.
+- NEVER write `<main>`, `<h1>`, or a skip link by hand — use `<Page>`. Writing them manually competes with the Page wrapper and the runtime scanner will throw.
+- Section headings MUST start at `<h2>` (the level immediately below the Page h1) and step by one. NEVER skip heading levels (h2 → h4). Use `<Heading as="h2">` / `<Heading as="h3">` from the Text module.
+- `<Page title="…">` MUST describe the page's purpose — NEVER just the brand name on a functional page. `title="Walmart"` on a checkout page is meaningless to a screen reader user.
+
+**`titleVisuallyHidden` — when a visual heading already exists:** `<Page>`'s H1 carries no LD visual heading styles. Without `titleVisuallyHidden`, on a page that has its own styled visual heading (hero, dark section bar, Header-rendered brand name), the H1 still renders — as tiny unstyled text sitting above the real heading. Two titles appear on screen.
+
+- **Page has its own visual heading** (hero, header bar, section banner) → pass `titleVisuallyHidden`. Render the visual heading as `<h2>`.
+- **Page title IS the only heading** (no separate visual header) → omit `titleVisuallyHidden`. Do NOT add a second `<Heading as="h1">`.
+
+```tsx
+// CORRECT — H1 hidden, visual heading is h2
+<Page title="Sales Dashboard" titleVisuallyHidden>
+  <Heading as="h2">Sales Dashboard</Heading>
+</Page>
+
+// WRONG — H1 renders as unstyled tiny text above the styled heading
+<Page title="Sales Dashboard">
+  <Heading as="h2">Sales Dashboard</Heading>
+</Page>
+
+// WRONG — brand name only on a functional page
+<Page title="Walmart">…</Page>
+```
+
+**Skip link — always Tab stop #1:** `<Page>` renders the skip link and portals it into `#ld-skip-link-root`, which sits before `#root` in `index.html`. This guarantees it is the first focusable element in the DOM regardless of where `<Page>` appears in the React tree — even when `<Header>` renders before `<Page>`. No manual action needed; just use `<Page>`.
+
+```tsx
+// WRONG — double Page wrapper (two <main>, two <h1>)
+// App.tsx
+<Page title="My App">
+  <CartPage />          {/* CartPage already renders its own <Page> inside */}
+</Page>
+
+// CORRECT — App.tsx renders the page module directly; the page module owns Page
+// App.tsx
+<A11yAnnouncementProvider>
+  <CartPage />
+</A11yAnnouncementProvider>
+// CartPage.tsx
+<Page title="Cart">…</Page>
+```
+
+### Forms
+
+- MUST use Living Design form components (`TextField`, `TextArea`, `Select`, `DateField`, `Checkbox`, `Radio`) for every input. They wire `label ↔ input`, `aria-describedby ↔ helperText`, and `aria-invalid ↔ error` automatically.
+- MUST render error text through the component's `error` prop and helper text through `helperText` — NEVER as a sibling `<div>` or paragraph, which has no `aria-describedby` wiring.
+- MUST group related radios/checkboxes with `FormGroup` so they share a label.
+
+```tsx
+// CORRECT — label, helper, error all tied together by the component
+<TextField
+  label="Email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  helperText="We'll only use this for order updates."
+  error={touched && !valid ? 'Enter a valid email' : undefined}
+  required
+/>
+
+// WRONG — error as a loose sibling
+<TextField label="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+{touched && !valid && <div style={{color: 'red'}}>Enter a valid email</div>}
+
+// WRONG — required asterisk rendered without the native required attribute
+<TextField label="Email *" value={email} onChange={(e) => setEmail(e.target.value)} />
+```
+
+**Form errors — focus must move to the first invalid field.** After a failed submit, focus staying on the submit button leaves keyboard and screen reader users with no indication that errors exist. Use the built-in `focusFirstError` utility from `@walmart/ld-kit/utils/focusFirstError` — it ships with the package.
+
+**Critical LD caveat:** LD's `TextField`, `TextArea`, and `Select` do NOT set `aria-invalid` on the underlying `<input>`. Error state is the CSS class `ld-textfield-error` on the wrapper div. The `focusFirstError` utility handles this — never rely solely on `[aria-invalid="true"]` when the form uses LD inputs.
+
+```tsx
+import { focusFirstError } from '@walmart/ld-kit/utils/focusFirstError';
+
+const formRef  = React.useRef<HTMLFormElement>(null);
+// alertRef: always in DOM (never conditionally mounted), tabIndex={-1}, aria-live="polite"
+const alertRef = React.useRef<HTMLDivElement>(null);
+
+function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  const errs = validate(fields);
+  setErrors(errs);
+
+  if (Object.keys(errs).length > 0) {
+    // Finds first .ld-textfield-error input in DOM order, or falls back to alertRef
+    focusFirstError(formRef, alertRef, new Set(Object.keys(errs)));
+    return;
+  }
+  submit();
+}
+
+// JSX
+<form ref={formRef} onSubmit={handleSubmit} noValidate>
+  <TextField label="Email" error={errors.email} value={fields.email} onChange={…} />
+
+  {/* alertRef wrapper: always present, even when empty */}
+  <div ref={alertRef} tabIndex={-1} aria-live="polite" style={{ outline: 'none' }}>
+    {globalError && <Alert variant="error">{globalError}</Alert>}
+  </div>
+
+  {/* Submit is never disabled — keyboard users must be able to trigger validation */}
+  <Button type="submit" variant="primary">Submit</Button>
+</form>
+```
+
+For forms mixing `TextField` and `Checkbox`/`Radio`/`Switch` (which have no `error` prop), pass a `directRef` — see the JSDoc on `focusFirstError` (`node scripts/ld/cli.mjs show focusFirstError`) for the full pattern.
+
+### Pricing — visually hidden context required
+
+Prices as plain visible text give screen readers no way to distinguish sale from original price. Every price needs both a visual `aria-hidden` presentation AND a `<VisuallyHidden>` sibling with the full spoken context.
+
+```tsx
+import { VisuallyHidden } from "@walmart/ld-kit";
+
+// CORRECT — sale pricing
+<div>
+  <span aria-hidden="true">
+    <span style={{ textDecoration: 'line-through', color: 'var(--ld-semantic-color-text-subtle)' }}>$24.99</span>
+    {' '}
+    <span style={{ color: 'var(--ld-semantic-color-text-negative)' }}>$12.99</span>
+  </span>
+  <VisuallyHidden>Was $24.99, now $12.99</VisuallyHidden>
+</div>
+
+// WRONG — no context, screen reader cannot distinguish was/now
+<span>$24.99</span> <span>$12.99</span>
+```
+
+### Star rating
+
+- An interactive rating MUST be `<Radio>` inside `<FormGroup>`, one per star — never custom clickable SVGs.
+- After a vote, move focus to the read-only display (`tabIndex={-1}`, ~350ms) so the updated label is announced.
+
+### Color and meaning
+
+- NEVER convey state through colour alone — pair it with text or a labelled icon: `<Tag color="negative" leading={<Icon name="Warning" decorative />}>Error</Tag>`.
+- Text on a brand-coloured surface MUST use `--ld-semantic-color-text-inverse`; text on a light surface MUST use `--ld-semantic-color-text`. NEVER pair `fill-brand` with `text-brand` — every LD brand colour fails contrast against itself.
+
+### Dynamic content and live regions
+
+- MUST announce async updates to assistive tech using `useAnnounce()` from `@walmart/ld-kit`:
+  - `announce.polite("3 results found for 'blender'")` — filters, search result counts, non-urgent updates.
+  - `announce.assertive("Your session will expire in 1 minute")` — urgent only. Use sparingly.
+- Store-connected cart bindings announce add/remove automatically — don't double-announce.
+- `<Alert>` added dynamically to the DOM MUST mount inside a container present on page load with `role="alert"` or `aria-live="polite"`. The `A11yAnnouncementProvider` mounted in `src/App.tsx` already provides global live regions — prefer `useAnnounce()` over building your own.
+
+```tsx
+// CORRECT — announce filter results
+import { useAnnounce } from "@walmart/ld-kit";
+const announce = useAnnounce();
+useEffect(() => { announce.polite(`${results.length} results for "${query}"`); }, [results, query]);
+
+// WRONG — assume re-rendering the list is enough
+// Screen readers do not see layout changes; they see DOM announcements.
+```
+
+### Overlays and focus
+
+- `Modal`, `Panel`, `BottomSheet`: the trigger element MUST receive focus back on close. The easy way is to trigger them from a `Button` — the wrappers track focus return automatically.
+- NEVER build a modal/drawer with a bare `<div style={{position: 'fixed'}}>`. It has no focus trap, no Esc key, no scroll lock, no focus return. Use the Living Design overlay components.
+- A dialog that mounts without focus inside it is a defect. `Modal`/`Panel`/`BottomSheet` handle this; custom overlays don't.
+- **Nested dialogs:** give each modal its **own independent `isOpen` state** — NEVER share one boolean between two nested modals. The inner dialog won't receive focus when it opens. The inner dialog's close action should return focus to its trigger in the outer modal via a `ref`.
+
+```tsx
+const [showOuter, setShowOuter] = React.useState(false);
+const [showInner, setShowInner] = React.useState(false);
+const innerTriggerRef = React.useRef<HTMLButtonElement>(null);
+
+<Modal isOpen={showOuter} onClose={() => setShowOuter(false)} title="Cancel Membership">
+  <Button ref={innerTriggerRef} onClick={() => setShowInner(true)}>Yes, cancel</Button>
+</Modal>
+
+<Modal isOpen={showInner} onClose={() => { setShowInner(false); setTimeout(() => innerTriggerRef.current?.focus(), 0); }} title="Are you sure?">
+  …
+</Modal>
+```
+
+### Keyboard
+
+- Drag-and-drop, carousels and drawers MUST come from Living Design. The shipped components carry the keyboard contract; a hand-rolled equivalent will not.
+
+### Single-select choice groups
+
+A row of pills / tabs / toggles where one option is selected at a time is a radiogroup, and must be a single tab stop with arrow-key navigation. Living Design already ships this — don't hand-roll the roving tabindex.
+
+- For "one of many" pill-style selectors (category toggles, view modes, filter-style single-select), MUST use `<SegmentedControl>` from `@walmart/ld-kit`.
+- For switching between top-level page views, MUST use `<TabNavigation>` + `<TabNavigationItem>`.
+- For single-select inside a form, MUST use `<Radio>` inside `<FormGroup>`.
+- NEVER use `<ChipGroup>` + `<Chip selected>` for exclusive single-select. `<ChipGroup>`/`<Chip>` renders each chip as an independent `<button aria-pressed>` — that's the MULTI-select filter pattern. Using it for "one of many" creates N tab stops and no arrow-key navigation.
+
+The runtime scanner enforces this. It will throw `Single-select button group without keyboard-group semantics: …` when it sees 2+ sibling toggle buttons with one active outside a `role="radiogroup"` / `role="tablist"` wrapper, and `<role> … missing roving tabindex` when a `radiogroup`/`tablist`/`toolbar` has more than one item with `tabindex=0`. Fix, don't suppress.
+
+```tsx
+// CORRECT — SegmentedControl for one-of-many category toggle
+<SegmentedControl
+  aria-label="Meal category"
+  value={category}
+  onChange={setCategory}
+  items={CATEGORIES.map((c) => ({
+    value: c.label,
+    label: c.label,
+    icon: <Icon name={c.iconName} decorative />,
+  }))}
+/>
+
+// CORRECT — ChipGroup for MULTI-select filter chips (each toggles independently)
+<ChipGroup>
+  {FILTERS.map((f) => (
+    <Chip key={f.id} selected={active.has(f.id)} onClick={() => toggle(f.id)}>
+      {f.label}
+    </Chip>
+  ))}
+</ChipGroup>
+
+// WRONG — ChipGroup used for EXCLUSIVE single-select
+<ChipGroup>
+  {CATEGORIES.map((c, i) => (
+    <Chip key={c.label} selected={i === active} onClick={() => setActive(i)}>
+      {c.label}
+    </Chip>
+  ))}
+</ChipGroup>
+```
+
+### Focus indicators
+
+- NEVER leave `outline: none` unreplaced. If you suppress it, pair it on the same element with `:focus-visible { outline: 2px solid var(--ld-semantic-color-content-brand-default); outline-offset: 2px; }`.
+
+### Motion and timing
+
+- The project ships a global `@media (prefers-reduced-motion: reduce)` guard that neutralizes every animation and transition. NEVER override, remove, or fight it at the component level.
+- `Carousel` does not auto-play by default. NEVER add auto-advance without a visible pause control.
+
+### Overlays
+
+- `Modal`, `Panel`, `BottomSheet` and `Tooltip` already close on Escape. NEVER intercept the Escape key, and never treat scrim-click as the only dismissal.
+
+### Loading and async content
+
+- A container swapping `Skeleton` / `SkeletonText` / `Spinner` for real content MUST carry `aria-busy={isLoading}`. `Spinner` announces nothing on its own — pair it with `useAnnounce().polite('Loading…')` for blocking operations.
+
+### External links
+
+- An `<a target="_blank">` MUST say so: `Terms of service<VisuallyHidden> (opens in new window)</VisuallyHidden>` — `VisuallyHidden` is exported from `@walmart/ld-kit`.
+
+### Dynamic banners and notifications
+
+- `Alert`, `Banner`, `BasicBanner`, `OrderStatusBanner` and `Snackbar` already carry their live-region roles. A custom notification that mounts dynamically MUST declare its own (`role="status"`, or `role="alert"` when urgent) — or skip it and use `useAnnounce()`.
+
+## Opt-out Contract
+
+The ONLY opt-out mechanism in this project is explicit, named, and justified:
+
+- `unsafeDecorative={{ reason: string }}` — on `<Image>` when the image is purely decorative. Requires a non-empty reason.
+- `decorative` (boolean) — on `<Icon>` when the icon sits next to a descriptive text label (this is routine and doesn't need a reason).
+
+**Before using `unsafeDecorative` on an image, ask the user.** The runtime logs the reason string so every opt-out is visible in dev.
+
+There is no other opt-out. There is no `a11yOff`, no `disableA11yCheck`, no global config flag. If a check is throwing, fix the violation.

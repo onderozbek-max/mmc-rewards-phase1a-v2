@@ -1,0 +1,129 @@
+/**
+ * Phase 1A prototype — layout glue that cannot be expressed with inline
+ * styles on the React tree, because LD's `BottomSheet` renders through
+ * `Overlay`, which portals straight to `document.body` (see
+ * node_modules/@walmart/ld-kit/.../Overlay.js). That means the sheet and its
+ * scrim are NOT DOM descendants of our phone frame, so they cannot inherit a
+ * clipped containing block from it — only globals here can reach them.
+ *
+ * `Phase1APhoneStage` measures the live phone-frame rectangle (see
+ * usePhoneFrameRect in src/lib/usePhoneFrameRect.ts) and writes it to these
+ * custom properties on <html> on mount/resize. The rules below pin the
+ * portaled sheet + scrim to that exact rectangle instead of the full
+ * browser viewport, so the sheet visually "appears over Community Home"
+ * (Section 8) instead of swallowing the control panel next to it.
+ *
+ * These two selectors are the ONLY global overrides in this file, and they
+ * only ever touch position/size — never color, copy, or timing — so Arm 2
+ * and Arm 3 remain pixel-identical in every other respect.
+ */
+.ld-bottomsheet-bottomsheetportal-container,
+.ld-overlay-overlayscrim-scrim {
+  left: var(--phase1a-frame-left, 0px);
+  top: var(--phase1a-frame-top, 0px);
+  width: var(--phase1a-frame-width, 100vw);
+  height: var(--phase1a-frame-height, 100vh);
+  right: auto;
+  bottom: auto;
+}
+
+/* The sheet itself should fill the simulated phone width, not cap at 48rem. */
+.ld-bottomsheet-bottomsheetportal-bottomSheet {
+  max-width: 100%;
+}
+
+/* Breathing room above the iOS home-indicator area for the pinned CTA. */
+.ld-bottomsheet-bottomsheetportal-actionContent {
+  padding-bottom: calc(var(--ld-semantic-spacing-200, 1rem) + env(safe-area-inset-bottom, 20px));
+}
+
+.phase1a-shell {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  background: var(--ld-semantic-color-surface-subtle, #f8f8f8);
+}
+
+.phase1a-stage {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ld-primitive-scale-space-400, 2rem) var(--ld-primitive-scale-space-300, 1.5rem);
+  min-width: 0;
+}
+
+.phase1a-controls {
+  flex: 0 0 380px;
+  width: 380px;
+  box-sizing: border-box;
+  border-left: 1px solid var(--ld-semantic-color-border-subtlest, #74767c);
+  background: var(--ld-semantic-color-surface, #fff);
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 56.25rem) {
+  .phase1a-shell {
+    flex-direction: column;
+  }
+  .phase1a-controls {
+    flex: 1 1 auto;
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--ld-semantic-color-border-subtlest, #74767c);
+    max-height: none;
+  }
+}
+
+.phase1a-phone-frame {
+  position: relative;
+  box-sizing: border-box;
+  background: var(--ld-semantic-color-background, #fff);
+  border-radius: var(--ld-semantic-border-radius-xlarge, 1rem);
+  box-shadow: var(--ld-semantic-elevation-300);
+  border: 1px solid var(--ld-semantic-color-border-subtlest, #74767c);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.phase1a-phone-screen {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.phase1a-status-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--ld-primitive-scale-space-200, 1rem);
+  height: 44px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ld-semantic-color-text, #2e2f32);
+  background: var(--ld-semantic-color-background, #fff);
+}
+
+.phase1a-home-indicator {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  background: var(--ld-semantic-color-background, #fff);
+}
+
+.phase1a-home-indicator::after {
+  content: "";
+  width: 134px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--ld-semantic-color-text, #2e2f32);
+  opacity: 0.8;
+}

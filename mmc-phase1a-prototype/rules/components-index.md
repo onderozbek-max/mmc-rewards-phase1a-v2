@@ -1,0 +1,443 @@
+# Living Design Component Index
+
+Use this index to discover what this kit gives you. **Before using anything here**, either:
+
+- **Run** `node scripts/ld/cli.mjs show <Name>` — works from any working directory, needs no install.
+- **Read** `reference/<category>/<dir>/<Name>.md` using the exact `docPath` in `components.json`. Component docs live under `reference/components/`, pattern docs under `reference/patterns/`, and utility docs under `reference/utils/`.
+
+Documentation and asset metadata in `reference/` work before npm install. Runtime code comes from `@walmart/ld-kit`; no library source is copied into this app.
+
+Searching by intent beats scanning this list: `node scripts/ld/cli.mjs search <keywords>` ranks over rule sections, components and utilities at once.
+
+Use the public import path listed below, never a relative path into the documentation tree.
+## Components (295)
+
+- **A11yDevAssertions** — `@walmart/ld-kit`
+- **ActionGroup** — `@walmart/ld-kit` — Structured primary/secondary (and optional tertiary) action pair with prescribed Button variants and a fixed layout pattern. For generic button rows, use ButtonGroup instead.
+- **ActionTile** — `@walmart/ld-kit` — Selectable icon + title tile for action/choice grids (variant sets layout + size; selected drives pressed state)
+- **AgentFramework** — `@walmart/ld-kit` — Floating elevated work-surface card beside an agent chat (header with close/title/actions, scrollable body, optional footer)
+- **AgentResponse** — `@walmart/ld-kit` — Agent/assistant chat turn — avatar, name, reply body or streaming placeholder, optional link/timestamp/feedback slots
+- **Alert** — `@walmart/ld-kit` — Status message (success/info/warning/error)
+- **AlertDialog** — `@walmart/ld-kit` — Confirmation dialog (destructive flows)
+- **AlertDialogAction** — `@walmart/ld-kit` — Confirmation dialog (destructive flows)
+- **AlertDialogCancel** — `@walmart/ld-kit` — Confirmation dialog (destructive flows)
+- **AlertDialogContent** — `@walmart/ld-kit` — Confirmation dialog (destructive flows)
+- **AlertDialogTrigger** — `@walmart/ld-kit` — Confirmation dialog (destructive flows)
+- **AreaChart** — `@walmart/ld-kit` — Area chart — a trend over time read as magnitude from zero
+- **AspectRatio** — `@walmart/ld-kit` — Layout primitive locking children to a fixed width/height ratio (e.g. ratio={16/9})
+- **AttachmentTile** — `@walmart/ld-kit` — Removable attached-file/image chip — icon variant (pictogram + text) or image variant (thumbnail); wire onRemove
+- **Attribute** — `@walmart/ld-kit` — Leading-icon + label pill with size/color variants and optional comparison label (pass iconLabel when the icon carries meaning)
+- **Avatar** — `@walmart/ld-kit` — User / entity portrait
+- **AvatarButton** — `@walmart/ld-kit` — User / entity portrait
+- **AvatarFallback** — `@walmart/ld-kit` — User / entity portrait
+- **AvatarImage** — `@walmart/ld-kit` — User / entity portrait
+- **Badge** — `@walmart/ld-kit` — Count/status pill — integer-only children (number or numeric string), throws at runtime otherwise. Omit children for a status dot. Use Badge for counts; use Tag for text status labels ("New", "Beta", "Out of stock").
+- **Banner** — `@walmart/ld-kit` — High-impact global announcement; required close
+- **BasicBanner** — `@walmart/ld-kit` — Generic promotional banner
+- **Body** — `@walmart/ld-kit`
+- **BottomNav** — `@walmart/ld-kit` — Mobile-web bottom navigation bar
+- **BottomSheet** — `@walmart/ld-kit` — Modal anchored to the bottom of the viewport
+- **Breadcrumb** — `@walmart/ld-kit` — Hierarchical path navigation
+- **BreadcrumbItem** — `@walmart/ld-kit` — Single breadcrumb entry
+- **Button** — `@walmart/ld-kit` — Primary/secondary/tertiary/destructive action
+- **ButtonGroup** — `@walmart/ld-kit` — Related action row (children must be Button elements). For structured primary/secondary action pairs with prescribed variants, see ActionGroup.
+- **ButtonToggle** — `@walmart/ld-kit` — Disclosure/next button with trailing chevron (isOpen sets aria-expanded) and optional +N count
+- **Callout** — `@walmart/ld-kit` — Anchored onboarding / coach-mark overlay
+- **CalloutLink** — `@walmart/ld-kit` — Anchored onboarding / coach-mark overlay
+- **Caption** — `@walmart/ld-kit`
+- **Card** — `@walmart/ld-kit` — Structured card surface (header / body / footer)
+- **CardActions** — `@walmart/ld-kit` — Structured card surface (header / body / footer)
+- **CardContent** — `@walmart/ld-kit` — Card body slot
+- **CardHeader** — `@walmart/ld-kit` — Card title and leading content
+- **CardInteractive** — `@walmart/ld-kit` — Single- or multi-action card with actionMode="single" interactive states or actionMode="multi" static surface tokens; use static adornments in single mode and independent controls in multi mode
+- **CardInteractiveContent** — `@walmart/ld-kit` — Structured card surface (header / body / footer)
+- **CardInteractiveFooter** — `@walmart/ld-kit` — Structured card surface (header / body / footer)
+- **CardInteractiveHeader** — `@walmart/ld-kit` — Structured card surface (header / body / footer)
+- **CardMedia** — `@walmart/ld-kit` — Structured card surface (header / body / footer)
+- **Carousel** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselContent** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselHeaderNext** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselHeaderPrevious** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselItem** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselNext** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselPagination** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselPrevious** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselProgressBar** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CarouselSection** — `@walmart/ld-kit` — Horizontal scrolling content row for a single curated product set. Looping one per category produces a page of look-alike carousels — mix in Grid + ProductCardGrid for other sections instead of repeating Carousel.
+- **CategoryNav** — `@walmart/ld-kit` — Category browse navigation
+- **Checkbox** — `@walmart/ld-kit` — Multi-select choice (group with FormGroup)
+- **Chip** — `@walmart/ld-kit` — Interactive filter chip (multi-select; toggles independently)
+- **ChipGroup** — `@walmart/ld-kit` — Container for filter-style multi-select chips
+- **ClusteredColumnChart** — `@walmart/ld-kit` — Clustered column chart — two to four series compared side by side across categories
+- **Collapse** — `@walmart/ld-kit` — Expand / collapse inline content
+- **Collapsible** — `@walmart/ld-kit` — Headless expand/collapse primitive (Collapsible + Trigger + Content) — manages open state only, no styling
+- **CollapsibleContent** — `@walmart/ld-kit` — Headless expand/collapse primitive (Collapsible + Trigger + Content) — manages open state only, no styling
+- **CollapsibleTrigger** — `@walmart/ld-kit` — Headless expand/collapse primitive (Collapsible + Trigger + Content) — manages open state only, no styling
+- **ColumnChart** — `@walmart/ld-kit` — Column chart — one measure compared across categories (a bar chart)
+- **Command** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandDialog** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandEmpty** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandGroup** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandInput** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandItem** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandList** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandSeparator** — `@walmart/ld-kit` — Cmd-K command palette
+- **CommandShortcut** — `@walmart/ld-kit` — Cmd-K command palette
+- **Container** — `@walmart/ld-kit` — Max-width responsive content wrapper
+- **ContentCard** — `@walmart/ld-kit` — Editorial / promotional card
+- **ContextMenu** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuCheckboxItem** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuContent** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuItem** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuLabel** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuRadioGroup** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuRadioItem** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuSeparator** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuShortcut** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuSub** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuSubContent** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuSubTrigger** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **ContextMenuTrigger** — `@walmart/ld-kit` — Right-click menu — thin wrapper over SelectDropdown with the full ContextMenu* item set (trigger via right-click)
+- **CountryCodePhoneInput** — `@walmart/ld-kit` — Phone-number field with a country-code selector that opens CountrySelectBottomSheet (onChange = phone string)
+- **CountrySelectBottomSheet** — `@walmart/ld-kit` — Modal bottom-sheet radio list for picking one country, confirmed via footer button (controlled open)
+- **CountrySelectDropdown** — `@walmart/ld-kit` — Searchable single/multi country combobox with keyboard listbox nav (multi confirmed via Apply)
+- **CountrySelectGroup** — `@walmart/ld-kit` — Radio-list country picker with flags and optional dial codes. For a mobile sheet, use CountrySelectBottomSheet
+- **DataTableBulkActions** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableCell** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableCellActions** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableCellBulkEditTextArea** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableCellInlineEditTextArea** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableCellSelect** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableCellStatus** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableConfigPanel** — `@walmart/ld-kit` — Right-side overlay for customizing DataTable columns — visibility, pinning, drag-reorder (controlled isOpen)
+- **DataTableHeaderSelect** — `@walmart/ld-kit` — Tabular data with sortable columns
+- **DataTableTitle** — `@walmart/ld-kit` — Header bar above a DataTable — title with optional subtitle and right-aligned actions slot
+- **DateField** — `@walmart/ld-kit` — Date input
+- **DatePicker** — `@walmart/ld-kit` — Calendar-style date selector
+- **DateRangePicker** — `@walmart/ld-kit` — Paired calendars plus mm/dd/yyyy inputs and Cancel/Apply for picking a {from,to} date range
+- **Display** — `@walmart/ld-kit`
+- **Divider** — `@walmart/ld-kit` — Section separator (needs surrounding margin)
+- **DoughnutChart** — `@walmart/ld-kit` — Doughnut (donut) chart — parts of one whole with the total's hole in the middle
+- **FAB** — `@walmart/ld-kit`
+- **Feedback** — `@walmart/ld-kit` — Thumbs up/down rating for an agent response with confirmation and Share-more affordance (value + onChange)
+- **FilterChip** — `@walmart/ld-kit`
+- **Flag** — `@walmart/ld-kit` — Inline label / flag pill
+- **FloatingButton** — `@walmart/ld-kit` — Icon-only floating action button (aria-label required, TS-enforced)
+- **FluentCombobox** — `@walmart/ld-kit` — Searchable single-select combobox, Fluent-styled (requires label or a11yLabelledBy). For LD-standard styling, use Combobox
+- **FluentMenu** — `@walmart/ld-kit` — Compound dropdown menu (Trigger/List/Item/Divider) with keyboard focus management (controlled open)
+- **FluentMenuDivider** — `@walmart/ld-kit` — Compound dropdown menu (Trigger/List/Item/Divider) with keyboard focus management (controlled open)
+- **FluentMenuItem** — `@walmart/ld-kit` — Compound dropdown menu (Trigger/List/Item/Divider) with keyboard focus management (controlled open)
+- **FluentMenuList** — `@walmart/ld-kit` — Compound dropdown menu (Trigger/List/Item/Divider) with keyboard focus management (controlled open)
+- **FluentMenuTrigger** — `@walmart/ld-kit` — Compound dropdown menu (Trigger/List/Item/Divider) with keyboard focus management (controlled open)
+- **FocusLock** — `@walmart/ld-kit`
+- **FocusTrap** — `@walmart/ld-kit`
+- **FormGroup** — `@walmart/ld-kit` — Group related form controls under a shared label
+- **Grid** — `@walmart/ld-kit` — Responsive 12-column layout (always pass hasGutter)
+- **GridColumn** — `@walmart/ld-kit` — Grid column (always set sm/md/lg breakpoints)
+- **HeaderInstructional** — `@walmart/ld-kit` — L2-screen context header — large title, optional count/description and trailing chevron or link action
+- **HeaderSection** — `@walmart/ld-kit` — Section header for in-screen hierarchy — medium (link action) or small (collapsible chevron) size, with divider
+- **HeaderWidget** — `@walmart/ld-kit` — Header for a self-contained widget/card — title, count, description, trailing action, optional error alert
+- **Heading** — `@walmart/ld-kit` — Section heading (use as=h2..h6; never skip levels)
+- **HeartView** — `@walmart/ld-kit` — Favorite toggle indicator
+- **HighlightText** — `@walmart/ld-kit` — Renders text with the case-insensitive query match un-bolded and the rest bold (typeahead convention)
+- **IconButton** — `@walmart/ld-kit` — Icon-only interactive button (requires a11yLabel)
+- **IconSelector** — `@walmart/ld-kit` — Binary on/off toggle shown as a paired icon set (outline/filled); announces as a switch (a11yLabel required)
+- **Image** — `@walmart/ld-kit` — LD-wrapped img with mandatory alt or unsafeDecorative
+- **Label** — `@walmart/ld-kit` — PX form label primitive (disabled via data-disabled). For core form labels, use FormLabel
+- **LanguageSelector** — `@walmart/ld-kit` — Circular flag dropdown for switching locales (controlled value/onChange)
+- **LineChart** — `@walmart/ld-kit` — Line chart — a measure changing over time; the default for a trend
+- **LineClamp** — `@walmart/ld-kit`
+- **Link** — `@walmart/ld-kit` — Inline text link
+- **LinkButton** — `@walmart/ld-kit` — Link styled as a button
+- **LocationBreadcrumb** — `@walmart/ld-kit` — Hierarchical location path with a trailing item count (wraps core Breadcrumb)
+- **MagicBorder** — `@walmart/ld-kit`
+- **MagicBox** — `@walmart/ld-kit`
+- **MagicFill** — `@walmart/ld-kit`
+- **MagicSurface** — `@walmart/ld-kit`
+- **MagicText** — `@walmart/ld-kit`
+- **Masthead** — `@walmart/ld-kit` — PX top-of-app header bar (logo/name, left/center/right slots, opt-in Bell/Help/Account). For the retail site header, use Header
+- **Menu** — `@walmart/ld-kit` — Triggered action menu
+- **Menubar** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarCheckboxItem** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarContent** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarGroup** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarItem** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarLabel** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarMenu** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarPortal** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarRadioGroup** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarRadioItem** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarSeparator** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarShortcut** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarSub** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarSubContent** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarSubTrigger** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenubarTrigger** — `@walmart/ld-kit` — Desktop menubar (File/Edit/View) with menus, submenus, checkbox/radio items and shortcuts (compound)
+- **MenuBreadcrumbItem** — `@walmart/ld-kit` — Triggered action menu
+- **MenuDescriptionItem** — `@walmart/ld-kit` — Triggered action menu
+- **MenuEditItem** — `@walmart/ld-kit` — Triggered action menu
+- **MenuInfoItem** — `@walmart/ld-kit` — Triggered action menu
+- **MenuItem** — `@walmart/ld-kit` — Menu entry
+- **MenuNote** — `@walmart/ld-kit` — Triggered action menu
+- **MenuSectionTitle** — `@walmart/ld-kit` — Triggered action menu
+- **MenuSectionTitleAccordion** — `@walmart/ld-kit` — Triggered action menu
+- **MenuSubMenu** — `@walmart/ld-kit` — Triggered action menu
+- **Metric** — `@walmart/ld-kit` — KPI / trend display
+- **MetricGroup** — `@walmart/ld-kit` — Two or three Metric components side-by-side with vertical dividers. For a single KPI, use Metric
+- **Modal** — `@walmart/ld-kit` — Centered overlay dialog (controlled isOpen)
+- **Nudge** — `@walmart/ld-kit` — Coaching hint / reminder
+- **OfferBadge** — `@walmart/ld-kit` — Savings/offer badge for item tiles — selectable cashback offer or applied discount
+- **Page** — `@walmart/ld-kit` — Page shell (renders main landmark + single h1 + skip link). Exactly ONE Page per app — do not nest a Page inside another Page.
+- **PageHeader** — `@walmart/ld-kit` — Full-bleed page header block (eyebrow label + h1 title + optional description; drop headingLevel when nested under an h1)
+- **Pagination** — `@walmart/ld-kit` — Page navigation control
+- **PaginationContent** — `@walmart/ld-kit` — Page navigation control
+- **PaginationEllipsis** — `@walmart/ld-kit` — Page navigation control
+- **PaginationItem** — `@walmart/ld-kit` — Page navigation control
+- **PaginationLink** — `@walmart/ld-kit` — Page navigation control
+- **PaginationNext** — `@walmart/ld-kit` — Page navigation control
+- **PaginationPrevious** — `@walmart/ld-kit` — Page navigation control
+- **Panel** — `@walmart/ld-kit` — Side-drawer overlay (controlled isOpen)
+- **PieChart** — `@walmart/ld-kit` — Pie chart — parts of one whole, felt at a single glance (five slices or fewer)
+- **Popover** — `@walmart/ld-kit` — Anchored contextual overlay
+- **PrimarySection** — `@walmart/ld-kit`
+- **ProcessingTrace** — `@walmart/ld-kit` — Collapsible AI agent run trace with a status pill and composable body cards (Reasoning, TaskPlan, Sources, Timeline, etc.)
+- **ProgressIndicator** — `@walmart/ld-kit` — Determinate progress bar
+- **ProgressTracker** — `@walmart/ld-kit` — Multi-step progress
+- **ProgressTrackerItem** — `@walmart/ld-kit` — Multi-step progress
+- **PromptComposer** — `@walmart/ld-kit` — AI agent chat input with attachments, dictation, slash/mention triggers, char counter, and generate/stop cycle
+- **PromptComposerDisclaimer** — `@walmart/ld-kit` — AI agent chat input with attachments, dictation, slash/mention triggers, char counter, and generate/stop cycle
+- **PromptComposerSuggestions** — `@walmart/ld-kit` — AI agent chat input with attachments, dictation, slash/mention triggers, char counter, and generate/stop cycle
+- **QuantityStepper** — `@walmart/ld-kit` — Increment/decrement stepper (onChange = absolute count)
+- **Radio** — `@walmart/ld-kit` — Single-select choice (share name; group via FormGroup)
+- **Rating** — `@walmart/ld-kit` — Star rating display
+- **RatingDisplay** — `@walmart/ld-kit` — Read-only star rating with optional review count, link, and text (value clamped 0–5). For input, use a rating control
+- **RatingStars** — `@walmart/ld-kit` — Star rating display
+- **ResizableHandle** — `@walmart/ld-kit`
+- **ResizablePanel** — `@walmart/ld-kit`
+- **ResizablePanelGroup** — `@walmart/ld-kit`
+- **RichMediaSheet** — `@walmart/ld-kit` — Rich media bottom sheet
+- **RichSnackbar** — `@walmart/ld-kit` — Rich-content snackbar variant
+- **RichSnackbarContainer** — `@walmart/ld-kit` — Rich-content snackbar variant
+- **RichTextEditor** — `@walmart/ld-kit` — Contenteditable rich-text input with a formatting toolbar, char limit and optional AI styling; emits HTML via onChange
+- **ScatterChart** — `@walmart/ld-kit` — Scatter plot — the relationship between two measures
+- **Scrim** — `@walmart/ld-kit` — Backdrop dimming primitive for PX overlays (isOpen/isClosing animation). Modal/Panel already include their own scrim
+- **ScrimOverlay** — `@walmart/ld-kit` — Portalled dimming layer behind custom overlay surfaces, dismiss on click/Escape. For standard dialogs use Modal/Panel/BottomSheet
+- **ScrollArea** — `@walmart/ld-kit` — Keyboard-focusable scrollable region with an accessible label (pair with ScrollBar)
+- **ScrollBar** — `@walmart/ld-kit` — Keyboard-focusable scrollable region with an accessible label (pair with ScrollBar)
+- **SearchBar** — `@walmart/ld-kit` — Site-wide search bar
+- **SearchField** — `@walmart/ld-kit` — Pill-shaped search input with leading magnifier, inline mic/barcode buttons and slide-in Cancel
+- **SecondarySection** — `@walmart/ld-kit`
+- **SectionHeader** — `@walmart/ld-kit` — Titled section header with optional count, description, and trailing link or expand/collapse chevron
+- **SegmentedControl** — `@walmart/ld-kit` — One-of-many pill toggle (radiogroup semantics)
+- **Select** — `@walmart/ld-kit` — Option-selection dropdown
+- **SelectCard** — `@walmart/ld-kit` — Card as a selectable option with built-in Checkbox (multi) or Radio (single); the whole card is the toggle target
+- **SelectDropdown** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownAccordionSection** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownCheckboxItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownCheckmarkItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownContent** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownDescriptionFavoriteItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownDescriptionItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownEditItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownFooter** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownLabel** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownRadioGroup** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownRadioItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownSectionTitle** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownSeparator** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownShortcut** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownSub** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownSubContent** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownSubTrigger** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownSwitchItem** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SelectDropdownTrigger** — `@walmart/ld-kit` — Composable menu/dropdown primitive (Trigger + Content + Item variants: checkbox/radio/switch/edit). For a value picker, use Select
+- **SidekickLogoIcon** — `@walmart/ld-kit`
+- **SideNavigation** — `@walmart/ld-kit`
+- **SideNavigationItem** — `@walmart/ld-kit`
+- **SignatureCapture** — `@walmart/ld-kit` — E-signature agreement block (trigger/terms/base/reauth variants). Embed via SignatureCaptureBottomSheet or SignatureCapturePanel
+- **SignatureCaptureBottomSheet** — `@walmart/ld-kit` — SignatureCapture hosted in a BottomSheet with an Agree & sign action. For a side panel, use SignatureCapturePanel
+- **SignatureCapturePanel** — `@walmart/ld-kit` — SignatureCapture hosted in a side Panel with an Agree & sign action. For a mobile sheet, use SignatureCaptureBottomSheet
+- **Skeleton** — `@walmart/ld-kit` — Block loading placeholder
+- **SkeletonText** — `@walmart/ld-kit` — Text-line loading placeholder
+- **SkylineBanner** — `@walmart/ld-kit` — Promotional skyline banner
+- **Slider** — `@walmart/ld-kit` — Range-input slider, single or two-thumb range (value array length sets thumb count); optional labels
+- **Slot** — `@walmart/ld-kit` — Radix-style prop-merging primitive: renders its single child with Slot's props/refs merged in (powers asChild)
+- **Sources** — `@walmart/ld-kit` — Ordered list of cited references (favicon + title + snippet) backing an agent response
+- **Sparkline** — `@walmart/ld-kit` — Sparkline — a trend as a glyph; shape without axes, for a tile or inline with text
+- **SpinButton** — `@walmart/ld-kit` — Numeric stepper input with up/down chevrons and min/max/step clamping (requires label or a11yLabelledBy)
+- **Spinner** — `@walmart/ld-kit` — Indeterminate loading indicator
+- **StackedColumnChart** — `@walmart/ld-kit` — Stacked column chart — what each category is made of, across categories
+- **SuggestionButton** — `@walmart/ld-kit` — Floating elevated work-surface card beside an agent chat (header with close/title/actions, scrollable body, optional footer)
+- **SuggestionTextLink** — `@walmart/ld-kit` — Floating elevated work-surface card beside an agent chat (header with close/title/actions, scrollable body, optional footer)
+- **Switch** — `@walmart/ld-kit` — Boolean toggle
+- **TabNavigation** — `@walmart/ld-kit` — Top-level section tabs
+- **TabNavigationItem** — `@walmart/ld-kit` — Tab entry
+- **Tag** — `@walmart/ld-kit` — Text status pill — accepts any ReactNode children (e.g. "New", "Beta", "Out of stock"). For integer-only counts and status dots, use Badge.
+- **TagInteractive** — `@walmart/ld-kit`
+- **TertiarySection** — `@walmart/ld-kit`
+- **TextArea** — `@walmart/ld-kit` — Multi-line text input
+- **TextField** — `@walmart/ld-kit` — Single-line text input
+- **TextFieldSplit** — `@walmart/ld-kit` — Text field with a leading inline Select (e.g. country code / unit) sharing one bordered control
+- **TimerView** — `@walmart/ld-kit` — Countdown timer view
+- **Toggle** — `@walmart/ld-kit` — Pressable icon/text toggle button holding an on/off state (switch semantics). For a labeled row switch, use Switch
+- **ToggleGroup** — `@walmart/ld-kit` — Group of Toggle buttons with single- or multiple-selection mode (type), sharing variant/size
+- **ToggleGroupItem** — `@walmart/ld-kit` — Group of Toggle buttons with single- or multiple-selection mode (type), sharing variant/size
+- **Tooltip** — `@walmart/ld-kit` — Hover/focus contextual help
+- **TraceRow** — `@walmart/ld-kit` — Collapsible AI agent run trace with a status pill and composable body cards (Reasoning, TaskPlan, Sources, Timeline, etc.)
+- **TraceTag** — `@walmart/ld-kit` — Collapsible AI agent run trace with a status pill and composable body cards (Reasoning, TaskPlan, Sources, Timeline, etc.)
+- **UploadFile** — `@walmart/ld-kit` — Drag-and-drop file upload dropzone with browse button and per-file status/progress list (accept, maxFiles)
+- **UploadImage** — `@walmart/ld-kit` — Image upload tile
+- **useA11yAnnouncement** _(hook)_ — `@walmart/ld-kit`
+- **useAnnounce** _(hook)_ — `@walmart/ld-kit` — Friendlier alias for `useA11yAnnouncement` with a shorter API shape.
+- **useCalendar** _(hook)_ — `@walmart/ld-kit` — Calendar-style date selector
+- **useCalendarDayUtilities** _(hook)_ — `@walmart/ld-kit` — Calendar-style date selector
+- **useDateField** _(hook)_ — `@walmart/ld-kit` — Calendar-style date selector
+- **useDescenderPadding** _(hook)_ — `@walmart/ld-kit`
+- **useLocale** _(hook)_ — `@walmart/ld-kit` — Calendar-style date selector
+- **useLocalizedFormatters** _(hook)_ — `@walmart/ld-kit` — Calendar-style date selector
+- **useLockBodyScroll** _(hook)_ — `@walmart/ld-kit`
+- **useMenuCalculatePosition** _(hook)_ — `@walmart/ld-kit` — Triggered action menu
+- **useOnKeyDown** _(hook)_ — `@walmart/ld-kit`
+- **usePointerOutside** _(hook)_ — `@walmart/ld-kit`
+- **UserResponse** — `@walmart/ld-kit` — Chat bubble for the user's own message in a conversational/AI UI (themeable fill + text color, optional attachment)
+- **useSnackbar** _(hook)_ — `@walmart/ld-kit` — Snackbars provide brief messages at the bottom of the screen regarding app processes.
+- **useStableId** _(hook)_ — `@walmart/ld-kit`
+- **useWCPRichSnackbar** _(hook)_ — `@walmart/ld-kit` — Rich-content snackbar variant
+- **useWCPTimer** _(hook)_ — `@walmart/ld-kit` — Countdown timer view
+- **VisuallyHidden** — `@walmart/ld-kit` — Screen-reader-only text
+- **WPlusIcon** — `@walmart/ld-kit`
+
+## Patterns (116)
+
+- **Accordion** — `@walmart/ld-kit` — Stacked expandable sections
+- **AccordionHeader** — `@walmart/ld-kit` — Stacked expandable sections
+- **AccordionItem** — `@walmart/ld-kit` — Stacked expandable sections
+- **AccordionPanel** — `@walmart/ld-kit` — Stacked expandable sections
+- **AccountSideNav** — `@walmart/ld-kit` — Account-section side navigation
+- **ActiveCurbsideCard** — `@walmart/ld-kit` — Active curbside order card
+- **AgentChatSidebar** — `@walmart/ld-kit`
+- **AgentChatSidebarContent** — `@walmart/ld-kit`
+- **AgentChatSidebarFooter** — `@walmart/ld-kit`
+- **AgentChatSidebarHeader** — `@walmart/ld-kit`
+- **AgentChatSidebarItem** — `@walmart/ld-kit`
+- **AgentChatSidebarLockToggle** — `@walmart/ld-kit`
+- **AgentChatSidebarProvider** — `@walmart/ld-kit`
+- **AgentChatSidebarSection** — `@walmart/ld-kit`
+- **AgentChatSidebarSegment** — `@walmart/ld-kit`
+- **AgentChatSidebarSeparator** — `@walmart/ld-kit`
+- **AgentChatSidebarTextItem** — `@walmart/ld-kit`
+- **AgentChatSidebarTrigger** — `@walmart/ld-kit`
+- **AgentFrameworkWorkspace** — `@walmart/ld-kit` — Arrangeable group of AgentFramework cards — drag to split or stack, resize, maximize, animated open/close
+- **AppHeader** — `@walmart/ld-kit` — Mobile associate-app top bar with status bar, title, search, actions, and account menu (variant + platform)
+- **AutoCareModals** — `@walmart/ld-kit` — Auto Care demo modal set (check-in / reschedule / details) switched by openModal; built on DemoModal. Demo/prototype pattern
+- **AutoCareUpsellOfferCard** — `@walmart/ld-kit` — AutoCare upsell offer card
+- **AxBottomNav** — `@walmart/ld-kit` — Mobile associate bottom tab bar (For you / Today's Plan / Your team) with optional floating AI agent button
+- **CarouselProductCard** — `@walmart/ld-kit` — Product card sized for carousel rows
+- **CheckInModal** — `@walmart/ld-kit` — Curbside-pickup check-in demo modal with confirmation state (assigns a bay). Demo/prototype pattern
+- **ClockingWidget** — `@walmart/ld-kit` — Associate clock-in/out summary card — status, role, shift/lunch/store, and Clock in + View timecard actions
+- **CombinedOrderCard** — `@walmart/ld-kit` — Two-column order card pairing an Auto Care side with a delivery/curbside side, each with progress tracker, plus a bundle total
+- **ContinueShopping** — `@walmart/ld-kit` — Continue-shopping carousel section
+- **DelayedDeliveryCard** — `@walmart/ld-kit` — Order card for a delayed delivery — warning banner, progress tracker, and reschedule/pickup/cancel actions
+- **DelayedDeliveryModals** — `@walmart/ld-kit` — Reschedule/pickup/cancel/details modal set for delayed orders (switch via openModal)
+- **DemoModal** — `@walmart/ld-kit` — Lightweight portal modal for demos/prototypes (controlled open). For production dialogs, use Modal
+- **DesktopFooter** — `@walmart/ld-kit` — Desktop footer
+- **FlashDealsCarousel** — `@walmart/ld-kit` — Built-in flash-deals product row (writes to Store)
+- **FlashDealsItemTile** — `@walmart/ld-kit` — Product tile for flash-deals grids — price, savings flag, heart, and add/options action
+- **Footer** — `@walmart/ld-kit` — Drop-in site footer that auto-picks desktop vs mobile-web layout by viewport (override with variant)
+- **Form** — `@walmart/ld-kit` — Form wrapper
+- **FormControl** — `@walmart/ld-kit`
+- **FormDescription** — `@walmart/ld-kit`
+- **FormField** — `@walmart/ld-kit`
+- **FormItem** — `@walmart/ld-kit`
+- **FormMessage** — `@walmart/ld-kit`
+- **GenericItemTile** — `@walmart/ld-kit` — Full-featured generic item tile — image, flag, heart, swatches, pack chips, sponsored, pricing, description, rating, and fulfillment attributes. Based on WCP Item tile (Figma node 89462:8140, breakpoint 0-899px vertical variant).
+- **GetItNowModal** — `@walmart/ld-kit` — Confirmation modal for switching curbside pickup to express delivery, with fee/total summary (controlled open)
+- **Header** — `@walmart/ld-kit` — Full responsive site header (search / cart / account) — includes its own CategoryNav department strip; don't also render a standalone CategoryNav next to it.
+- **IntelligentInsight** — `@walmart/ld-kit` — Sidekick AI insight card — brand mark + insight label, optional title/description/attributes and action button
+- **IntelligentRecommendation** — `@walmart/ld-kit` — AI recommendation card (eyebrow, attributes, alert, one to three buttons, collapsible sources)
+- **ItemRecommendation** — `@walmart/ld-kit` — AI product recommendation card with item image/price, metrics, location chip, Sidekick insight and actions
+- **ItemTile** — `@walmart/ld-kit` — Product tile for carousels (~200px max width)
+- **ItemTileCondensed** — `@walmart/ld-kit` — Compact circular-image product tile for grocery/re-order grids with add-to-cart pill and edit-mode stepper
+- **JumpRightBackIn** — `@walmart/ld-kit` — Horizontal-scroll section of category cards, each a 2x2 ItemTile grid (self-contained demo data)
+- **ListAction** — `@walmart/ld-kit` — List pattern for AI-assisted action queues (eyebrow, attributes, tag, insight, alert, button). Use ListActionList + ListActionItem
+- **ListActionItem** — `@walmart/ld-kit` — List pattern for AI-assisted action queues (eyebrow, attributes, tag, insight, alert, button). Use ListActionList + ListActionItem
+- **ListActionList** — `@walmart/ld-kit` — List pattern for AI-assisted action queues (eyebrow, attributes, tag, insight, alert, button). Use ListActionList + ListActionItem
+- **ListAssociate** — `@walmart/ld-kit` — List pattern for associate/scheduling lists — adds avatar, monitoring section, attendance tags. Use ListAssociateList + ListAssociateItem
+- **ListAssociateItem** — `@walmart/ld-kit` — List pattern for associate/scheduling lists — adds avatar, monitoring section, attendance tags. Use ListAssociateList + ListAssociateItem
+- **ListAssociateList** — `@walmart/ld-kit` — List pattern for associate/scheduling lists — adds avatar, monitoring section, attendance tags. Use ListAssociateList + ListAssociateItem
+- **ListGoal** — `@walmart/ld-kit` — Goal list item with status tag, progress bar, AI insight, alert and navigation chevron
+- **ListMembers** — `@walmart/ld-kit` — List pattern for team-member/scheduling lists with monitoring section and shift tags. Use ListMembersList + ListMembersItem
+- **ListMembersItem** — `@walmart/ld-kit` — List pattern for team-member/scheduling lists with monitoring section and shift tags. Use ListMembersList + ListMembersItem
+- **ListMembersList** — `@walmart/ld-kit` — List pattern for team-member/scheduling lists with monitoring section and shift tags. Use ListMembersList + ListMembersItem
+- **MaintenanceHealthCard** — `@walmart/ld-kit` — Auto Care vehicle maintenance card — health-score ring, per-service status grid, bundle savings, schedule actions
+- **MegaNavActionButton** — `@walmart/ld-kit` — Vertical icon-over-label tile button for dark mega-nav strips
+- **MobileMenuPanel** — `@walmart/ld-kit` — Full-height mobile nav drawer with dark action header, section rail and scrollable link list (controlled isOpen)
+- **MwebFooter** — `@walmart/ld-kit` — Mobile-web footer
+- **NewArrivalsCarousel** — `@walmart/ld-kit` — Auto-advancing full-bleed promo hero carousel (image + eyebrow/headline/CTA, prev/pause/next controls)
+- **OrderCard** — `@walmart/ld-kit` — Order status card — fulfillment type, progress tracker, product thumbnails, actions, delivered-order rating
+- **OrderCardSection** — `@walmart/ld-kit` — Renders a stack of order cards, picking the variant per entry via a kind tag. For one card, use OrderCard
+- **OrderStatusBanner** — `@walmart/ld-kit` — Order-status banner
+- **OrderStatusCard** — `@walmart/ld-kit` — Dismissible order-status card (thumbnail + status/delivery lines + Track link)
+- **OrderStatusSection** — `@walmart/ld-kit` — Stack of order-status notifications, each a full card or slim banner (asBanner). For one card, use OrderStatusCard
+- **ProductCardGrid** — `@walmart/ld-kit` — Product card sized for responsive grid columns — pair with Grid to break up a homepage or category page made of consecutive Carousel rows.
+- **ProductCardList** — `@walmart/ld-kit` — Product card sized for list layouts
+- **PromotionalItemTile** — `@walmart/ld-kit` — Compact promo product tile (image + price + Add button / QuantityStepper; name required as image alt)
+- **QueueBanner** — `@walmart/ld-kit` — Sticky queue/reservation banner with countdown timer and four variants (line-joined/warning/checkout/error)
+- **QueueCard** — `@walmart/ld-kit` — Pickup-queue order card
+- **QueueItemCard** — `@walmart/ld-kit` — Queue reservation card for one held item (wait-time timer badge + product + View/Leave actions)
+- **QueueLanding** — `@walmart/ld-kit` — Full waiting-room landing page for a queued item (authenticated in-line hero vs. unauthenticated sign-in prompt)
+- **QueuePanel** — `@walmart/ld-kit` — Right-side slide-in Panel listing queued items as QueueItemCards (controlled isOpen)
+- **QueueSection** — `@walmart/ld-kit` — Dispatcher for queue/reservation flows, picking the primitive by state.kind (timer/card/banner/landing)
+- **ScheduleWidget** — `@walmart/ld-kit` — Associate shift schedule list (date/role/lunch/store rows with optional Report-an-absence CTA)
+- **SearchFilterBar** — `@walmart/ld-kit` — Search results filter bar
+- **SearchResults** — `@walmart/ld-kit` — Composed search results section (search header + filter bar + product list/grid)
+- **SearchResultsHeader** — `@walmart/ld-kit` — Search-results page top bar (back button + SearchBar) for a query-refinement view
+- **ServicesCard** — `@walmart/ld-kit` — In-store services status card (pharmacy/auto/optical/bakery) with per-service ProgressTracker and actions
+- **SharedFormLabel** — `@walmart/ld-kit`
+- **Sidebar** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarContent** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarFooter** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarGroup** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarGroupContent** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarGroupLabel** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarHeader** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarInset** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarMenu** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarMenuButton** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarMenuItem** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarMenuSub** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarMenuSubButton** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarMenuSubItem** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarProvider** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarRail** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarSeparator** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarShell** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **SidebarTrigger** — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell with hover-expand, lock, resize
+- **TablePagination** — `@walmart/ld-kit` — Data-table footer — items-per-page Select, numbered Pagination, and a Page N of M jump. For bare page nav, use Pagination
+- **useAgentChat** _(hook)_ — `@walmart/ld-kit` — Owns one conversation.
+- **useAgentChatEvent** _(hook)_ — `@walmart/ld-kit` — Typed subscription to an agent-chat topic.
+- **useAgentChatSidebar** _(hook)_ — `@walmart/ld-kit` — Read the current collapse state.
+- **useChatAttachments** _(hook)_ — `@walmart/ld-kit` — Staged composer attachments.
+- **useChatDropOverlay** _(hook)_ — `@walmart/ld-kit` — Attach OS drag-and-drop listeners to a container element and expose a stable `isDragging` boolean.
+- **useFormField** _(hook)_ — `@walmart/ld-kit`
+- **useFrameworkWorkspace** _(hook)_ — `@walmart/ld-kit` — Owns the list of open frameworks.
+- **useItemTileBreakpoint** _(hook)_ — `@walmart/ld-kit` — Reports which ItemTile breakpoint a container is in, using the same 900px threshold as the `ld-it...
+- **usePrefersReducedMotion** _(hook)_ — `@walmart/ld-kit` — True when the user has asked for reduced motion.
+- **usePublishAgentChatState** _(hook)_ — `@walmart/ld-kit` — Observes the given controllers and publishes on every meaningful change.
+- **useSidebar** _(hook)_ — `@walmart/ld-kit` — App navigation sidebar — composable kit (SidebarProvider + parts) or data-driven SidebarShell wit...
+
+## Utilities (12)
+
+- **focusFirstError** _(utility)_ — `@walmart/ld-kit/utils/focusFirstError` — Move focus to the first invalid field after a failed form submit — scrolls it into view respecting reduced-motion, falling back to the error summary
+- **iconManager** _(utility)_ — `@walmart/ld-kit/utils/iconManager` — Look up icon names available in the active theme icon font
+- **Illustration** _(utility)_ — `@walmart/ld-kit/utils/Illustration` — Render an inline-SVG Living Design illustration by type and name
+- **illustrationManager** _(utility)_ — `@walmart/ld-kit/utils/illustrationManager` — Look up available inline-SVG illustrations by type (mono-small, mono-large, spot) and name
+- **Layout** _(utility)_ — `@walmart/ld-kit/layout` — Layout primitives for page shells, stacks and responsive spacing wrappers
+- **mediaManager** _(utility)_ — `@walmart/ld-kit/utils/mediaManager` — Look up tenant-branded media — logos, wordmarks, card art and error-state imagery
+- **mediaTenant** _(utility)_ — `@walmart/ld-kit/utils/mediaTenant` — Resolve the active theme to its media tenant — the brand whose logos and wordmarks apply
+- **pictogramScale** _(utility)_ — `@walmart/ld-kit/utils/pictogramScale` — Size Lottie and pictogram marks off the Living Design pictogram scale instead of pixel values
+- **ProductService** _(utility)_ — `@walmart/ld-kit/utils/ProductService` — The product catalog — every product, category, hero banner and marketing tile in the app comes from here. Use getProductsBySubcategory, not allProducts.slice(), to build a single curated product row.
+- **store** _(utility)_ — `@walmart/ld-kit/store` — Shared cross-component state via pub/sub — cart, favorites, header and search-query bindings
+- **themeManager** _(utility)_ — `@walmart/ld-kit/utils/themeManager` — Look up and switch brand themes — the list of supported themes and their metadata
+- **Theming** _(utility)_ — `@walmart/ld-kit/theming` — Theme runtime — initialize and switch the active brand theme for the whole app

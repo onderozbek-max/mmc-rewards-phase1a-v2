@@ -1,0 +1,126 @@
+---
+description: Icon font reference — available icons per theme, lookup instructions, and usage patterns
+globs: src/**/*.tsx
+alwaysApply: false
+---
+
+# Icon System Reference
+
+This project uses **font-based icons** organized into themed icon sets. Each theme maps to a primary icon font. The base `ld` (Living Design) icons are always available.
+
+## Theme → Icon Font Mapping
+
+Each theme resolves to exactly **one** primary icon font, and that mapping is
+generated — `node scripts/ld/cli.mjs icons` with no arguments lists every font with its icon
+count, and `node scripts/ld/cli.mjs icons <theme-name> <query>` resolves a theme to its font for
+you. Don't copy the mapping into code.
+
+The 1:1 relationship is the part worth knowing: the `Icon` component uses
+`useThemeIconPrefix()`, which returns only the active theme's primary font
+prefix — it never renders `ld`-prefixed icons. Use
+`getThemePrimaryIconFont(theme)` / `getThemeIconCssPrefix(theme)` from
+`@walmart/ld-kit/theming` when you need the value programmatically. The
+`_loadFonts` array is internal to CSS font loading — never iterate it in UI code.
+
+## How to Find Available Icons
+
+```bash
+node scripts/ld/cli.mjs icons                        # every font, with counts
+node scripts/ld/cli.mjs icons <query>                # search every font, e.g. `icons cart`
+node scripts/ld/cli.mjs icons <font-or-theme> <query>  # scope to one font; a theme name works too
+```
+
+This reads the same manifest `iconManager`'s `listIcons` / `searchIcons` read at
+runtime, so a name it returns is guaranteed to render. **Look the name up rather
+than recalling one** — a plausible-sounding icon name that does not exist is the
+most common icon defect, and it is invisible until the glyph fails to paint.
+
+Public codepoint exports live at `@walmart/ld-kit/icons/<font>`.
+
+## Programmatic Access
+
+All icon code should import from `@walmart/ld-kit/utils/iconManager` — one
+import surface for both theme→font helpers and manifest queries:
+
+```ts
+import {
+  // Theme → font (re-exported from Theming)
+  getThemePrimaryIconFont,
+  getThemeIconCssPrefix,
+  useThemeIconPrefix,
+  // Manifest queries
+  listIconFonts,
+  getIconFontInfo,
+  listIcons,
+  hasIcon,
+  searchIcons,
+  getIconsForTheme,
+  hasIconForTheme,
+  getCommonIcons,
+} from '@walmart/ld-kit/utils/iconManager';
+
+getIconsForTheme('Walmart');          // string[] of icon names for the wcp font
+hasIcon('sams-club', 'Cart');          // true
+searchIcons('wcp', 'chevron');         // ['ChevronDown', 'ChevronLeft', ...]
+getCommonIcons();                      // names present in every font
+```
+
+Use these helpers for any "what icons exist for theme X" question — they
+read `reference/fonts/icon-manifest.json` directly, so they stay in sync with
+the next Airtable pull. `getCommonIcons()` returns the names present in every
+font, which is the safe set when the active theme is not known.
+
+## Usage
+
+### Pre-made icon components (preferred)
+
+Import from `@walmart/ld-kit`:
+
+```tsx
+import {SearchIcon, StarIcon, SettingsIcon, PlusIcon, CheckIcon, XIcon, InfoIcon, AlertTriangleIcon, ChevronUpIcon}
+  from '@walmart/ld-kit';
+
+<IconButton a11yLabel="Search"><SearchIcon /></IconButton>
+<SpotIcon color="brand"><StarIcon /></SpotIcon>
+```
+
+Available pre-made wrappers: `SearchIcon`, `ChevronUpIcon`, `SettingsIcon` (Gear), `StarIcon`, `CheckIcon`, `PlusIcon`, `InfoIcon` (InfoCircle), `AlertTriangleIcon` (Warning), `XIcon` (Close).
+
+These components are **theme-aware** — they automatically resolve the correct icon font CSS class based on the active theme (e.g. `wcp wcp-Search` for Walmart, `sc sc-Search` for Sam's Club). Font loading is handled by the theming system (`loadThemeFonts()` in `@walmart/ld-kit/theming`), no manual font injection is needed.
+
+### Generic icon component (any icon name)
+
+```tsx
+import {Icon} from '@walmart/ld-kit';
+
+<Icon name="Cart" />
+<Icon name="Heart" style={{fontSize: 24}} />
+```
+
+Props: `name` (required), `size` (`"small"` | `"medium"` | `"large"`), `a11yLabel`, `style`, `className`, `title`. The component reads the current theme from the `data-ld-theme` attribute and renders with the appropriate font CSS prefix.
+
+### SVG icons (theme-independent)
+
+A small number of SVG-only icons have no font equivalent: `WPlusIcon`, `SparkIcon`, `HourglassIcon`, `ShieldCheckIcon`. All other icons have been migrated to the font-based `Icon` system, both available from `@walmart/ld-kit`.
+
+## Rules
+
+- **NEVER use an emoji or a Unicode glyph as an icon** (🔍 ⚙️ ✅ ❌ ⚠️ ℹ️ ✦ ⌄ ⓘ …), anywhere in
+  component code or UI text. They are not part of Living Design, render
+  differently on every platform, cannot be themed, and are announced
+  unpredictably by screen readers. If no icon matches the concept, use the
+  closest one or omit it — never fall back to an emoji.
+- **Look the name up** with `node scripts/ld/cli.mjs icons` instead of recalling it; use `Icon`
+  with a manifest name, never a raw codepoint.
+- **Check the active theme** before using commerce-specific icons (`Cart`,
+  `AddToCart`, `GroceryBag`). These exist in `wcp`, `sams-club` and `bodega`,
+  but not in `ld`.
+- **Use the pre-made wrappers** when one exists — they carry consistent sizing
+  and accessibility defaults.
+- **Use `IconButton`** for interactive icon-only buttons, never a bare `<button>`
+  with an icon inside. Use `SpotIcon` for a decorative circular treatment.
+- **Do not hardcode `font-family`** — the theme system loads the right icon font
+  via `loadThemeFonts()`.
+- **Accessibility**: icons inside interactive elements are `aria-hidden` and the
+  parent carries the label; standalone meaningful icons need their own. Full
+  directive in `node scripts/ld/cli.mjs rule a11y`.

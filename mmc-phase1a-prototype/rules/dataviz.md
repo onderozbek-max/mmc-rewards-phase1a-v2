@@ -1,0 +1,106 @@
+
+# Data visualization
+
+Only what is specific to this kit. General charting judgement is yours.
+
+## There is no colour prop
+
+Not `color`, not `palette`, not `scheme`. Series colour is assigned by position
+from the default scheme, and the slots are ordered so every prefix is the best
+available set of that size — picking cannot improve on it, and picking is how
+the measured contrast and colour-vision guarantees break.
+
+**Never:** pass a hex, `rgb()` or named colour to a chart; reference
+`--ld-primitive-color-*` in chart CSS; reorder series to get a different colour;
+set `data-ld-chart-scheme`.
+
+Red, green and Spark yellow are reserved for negative, positive and warning.
+A series takes one only when the series **is** a status.
+
+## Series limits: read the TYPE, not the palette
+
+Each chart type declares a `seriesRange` in
+`@walmart/ld-kitchart/chartRegister.ts`, and **that is the binding
+limit** — a `clusteredColumn` takes 2–4, a `column` exactly 1. Read the range
+for the type you are about to use. Exceeding it warns `takes N–M series, got X`
+in development and renders anyway, so it will not stop you.
+
+`@walmart/ld-kitchart/chartCapacity.ts` exports the palette's limits —
+`CHART_SERIES_ADVISED` (the widest range any type declares),
+`CHART_SERIES_DISTINCT`, `CHART_SERIES_SLOTS`. Read them, never copy the numbers
+into a file: they are generated and change with the scheme. The advised count is
+the ceiling across the whole kit, never the ceiling for your type.
+
+Two errors the register keeps catching:
+
+- **Categories are not series.** Seven departments on one measure is one series
+  with seven categories. If each row draws one bar, you have one series.
+- **A range has a minimum.** `clusteredColumn` and the part-to-whole types start
+  at 2.
+
+## Pie and doughnut are fully static
+
+No hover paint, no tooltip, no legend. Every slice carries a direct label, so a
+tooltip would restate the plot while covering it, and a legend would be the same
+lookup twice.
+
+One consequence binds you: those labels are SVG text inside `role="img"` and are
+unreachable by assistive technology, so a directly labelled chart's `ariaLabel`
+must **enumerate the parts and their values**, not just state the finding.
+
+    ✓ "Share of sales by category: Grocery 52, Apparel 31, Electronics 17 —
+       Grocery is over half."
+    ✗ "Grocery leads category sales."
+
+## `references` — what the data is measured against
+
+Cartesian types only.
+
+```tsx
+references={[{kind: 'target', axis: 'y', value: 60, label: 'Target $60K'}]}
+```
+
+| Kind | Use for |
+|---|---|
+| `target` | an AUTHORED decision — a sales target, an SLA ceiling, a limit |
+| `summary` | a DERIVED figure — a mean or median. Drawn dashed, so a reader can tell a fact about the business from a fact about this sample |
+| `zero` | the baseline on a signed or differenced series |
+| `event` | a moment — a price change, a launch, a promo start |
+| `band` | a REGION — a tolerance range, a holiday, a promo window |
+| `identity` | `y=x`, where distance off the line is the error |
+
+**A reference is ONE value across the whole plot.** There is no way to say "150
+for Grocery, 90 for Apparel". So: a target column holding the SAME number in
+every row is a reference — plotting it spends a colour slot and implies the
+target moved. A target that VARIES per category is a second series. One question
+separates them: *does the number change?*
+
+**On a nominal x axis an x reference takes a CATEGORY** — `value: 'W5'`, not `5`.
+A number there draws nothing; the component warns in development.
+
+No fitted/regression line, deliberately: it asserts something the data does not
+contain, and cannot ship without a way to state method, R² and n.
+
+## `seriesSelect` — let the reader examine one series
+
+```tsx
+<LineChart data={data} seriesKeys={keys} seriesNames={names} seriesSelect />
+```
+
+Hovering a legend entry previews it; clicking selects it and narrows point
+inspection to it. One selection at a time, and it moves with the arrow keys.
+Click white space or press Escape to release. Off by default, because a chart
+that silently became interactive would surprise a consumer who did not ask for
+it.
+
+| Type | |
+|---|---|
+| `line`, `area`, `scatter` | **yes** — crowding is real, and narrowing is the fix |
+| `clusteredColumn` | **no** — bars share a baseline and position already separates them, so there is nothing to find |
+| `column` | no — one series |
+| `pie`, `doughnut`, `sparkline` | no — no legend to select from |
+
+The register enforces this: the six types above list `seriesSelect` in their
+`forbids`, so passing the prop there is ignored and warns in development. You do
+not need to remember the table — but do not reach for the prop expecting it to
+work on a column family chart.
