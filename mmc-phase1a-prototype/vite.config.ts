@@ -4,6 +4,10 @@ import path from "node:path";
 import fs from "node:fs";
 
 export default defineConfig({
+  // GitHub Pages serves this app from /mmc-rewards-phase1a-v2/ (repo-name
+  // subpath, not domain root) when built via the Actions workflow — only
+  // apply the base path for that build, never for local dev.
+  base: process.env.GITHUB_ACTIONS ? "/mmc-rewards-phase1a-v2/" : "/",
   server: {
     port: 3099,
   },
