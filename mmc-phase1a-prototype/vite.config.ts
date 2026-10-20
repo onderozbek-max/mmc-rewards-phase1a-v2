@@ -3,14 +3,14 @@ import react from "@vitejs/plugin-react";
 import path from "node:path";
 import fs from "node:fs";
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   // GitHub Pages serves this app from /mmc-rewards-phase1a-v2/ (repo-name
-  // subpath, not domain root). The Pages workflow no longer builds in CI
-  // (see .github/workflows/deploy-pages.yml — @walmart/ld-kit is a private
-  // package unreachable from public runners), so this build is run locally
-  // via `npm run build:pages` and the resulting dist/ is committed. Local
-  // `npm run dev`/`npm run build` stay rooted at "/".
-  base: process.env.DEPLOY_TARGET === "pages" ? "/mmc-rewards-phase1a-v2/" : "/",
+  // subpath, not domain root). Every production build uses that base so a
+  // plain `npm run build` can never produce a dist/ that 404s its assets
+  // (blank page) on Pages; dev stays rooted at "/". The Pages workflow does
+  // not build in CI (@walmart/ld-kit is a private package public runners
+  // can't install), so dist/ is built locally and committed.
+  base: command === "build" ? "/mmc-rewards-phase1a-v2/" : "/",
   server: {
     port: 3099,
   },
@@ -21,7 +21,7 @@ export default defineConfig({
     }),
     a11yReportPlugin(),
   ],
-});
+}));
 
 /**
  * Living Design a11y dev-server plugin.
