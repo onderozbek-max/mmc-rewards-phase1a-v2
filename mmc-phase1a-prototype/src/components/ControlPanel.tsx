@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Body, Button, Divider, FormGroup, Heading, Radio, SegmentedControl, TextField } from "@walmart/ld-kit";
 import type { Arm } from "../lib/phase1aEngine";
-import { FIRST_MILESTONE_POINTS } from "../lib/phase1aEngine";
+import { crossesFirstMilestone } from "../lib/phase1aEngine";
 import { commonUnlockControlLabel } from "../lib/phase1aContent";
 import { DEVICE_PRESETS } from "../lib/devicePresets";
 import type { UseScenarioReturn } from "../lib/useScenario";
@@ -23,7 +23,7 @@ export function ControlPanel({
 }) {
   const events = usePhase1AEventLog();
   const { lastResult } = scenario;
-  const willCrossThreshold = scenario.previousLifetimePoints + scenario.pointsEarnedInput >= FIRST_MILESTONE_POINTS;
+  const willCrossThreshold = crossesFirstMilestone(scenario.previousLifetimePoints, scenario.pointsEarnedInput);
 
   return (
     <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>

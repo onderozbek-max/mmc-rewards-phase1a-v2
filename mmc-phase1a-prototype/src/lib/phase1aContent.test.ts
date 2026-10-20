@@ -3,7 +3,9 @@ import {
   bottomSheetHeadline,
   commonUnlock,
   lifetimeTotalLine,
+  milestoneBenefit,
   progressCopyByArm,
+  progressNoteByArm,
 } from "./phase1aContent";
 
 describe("Arm 2 vs Arm 3 content (Section 11 — experiment integrity)", () => {
@@ -50,5 +52,31 @@ describe("Common unlock copy (Section 7)", () => {
 
   it("preserves overshoot in the supporting line", () => {
     expect(commonUnlock.supportingLine(255)).toContain("255 lifetime points");
+  });
+});
+
+describe("Per-milestone Arm 2 vs Arm 3 copy", () => {
+  it("Arm 2 stays vague at every milestone — never names a benefit, never adds a note", () => {
+    for (const id of Object.keys(milestoneBenefit) as (keyof typeof milestoneBenefit)[]) {
+      const text = progressCopyByArm.arm2(100).join(" ");
+      expect(text).toBe("100 points to unlock your next Community benefit.");
+      expect(progressNoteByArm("arm2", id)).toBeNull();
+    }
+  });
+
+  it("Arm 3 names the right benefit for each milestone, sharing line 1 with Arm 2", () => {
+    expect(progressCopyByArm.arm3(150, "homeContent")).toEqual(["150 points to unlock", "expanded Community Home content."]);
+    expect(progressCopyByArm.arm3(590, "basicIhut")).toEqual(["590 points to unlock", "basic IHUT eligibility."]);
+    expect(progressCopyByArm.arm3(1490, "premiumIhut")).toEqual(["1490 points to unlock", "premium IHUT eligibility."]);
+    expect(progressCopyByArm.arm3(1790, "inStore")).toEqual(["1790 points to unlock", "exclusive in-store benefits."]);
+    expect(progressCopyByArm.arm3(590, "basicIhut")[0]).toBe(progressCopyByArm.arm2(590)[0]);
+  });
+
+  it("Arm 3 flags coming-soon benefits; the home-content unlock has no such note", () => {
+    expect(progressNoteByArm("arm3", "homeContent")).toBeNull();
+    expect(progressNoteByArm("arm3", "basicIhut")).toBe("Coming soon after unlock.");
+    expect(progressNoteByArm("arm3", "premiumIhut")).toBe("Coming soon after unlock.");
+    expect(progressNoteByArm("arm3", "inStore")).toBe("Coming soon.");
+    expect(progressNoteByArm("arm3", null)).toBeNull();
   });
 });

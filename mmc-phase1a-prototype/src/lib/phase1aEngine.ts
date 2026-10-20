@@ -13,6 +13,49 @@ export type Arm = 1 | 2 | 3;
 /** The first real Community benefit unlocks at this confirmed lifetime total. */
 export const FIRST_MILESTONE_POINTS = 250;
 
+export type MilestoneId = "homeContent" | "basicIhut" | "premiumIhut" | "inStore";
+
+export interface Milestone {
+  /** Lifetime points at which this milestone's benefit unlocks. */
+  threshold: number;
+  id: MilestoneId;
+}
+
+/**
+ * Ordered milestone ladder. Each entry is the benefit a member unlocks when
+ * they REACH `threshold`; the "next milestone" for a given total is the first
+ * entry whose threshold is still above it.
+ *
+ * ASSUMPTION: the final `inStore` threshold (5000) is a PLACEHOLDER — the
+ * brief defines the "above 3000" scenario's benefit (exclusive in-store
+ * benefits) but no point value for it. Change it here and every sheet,
+ * control, and test derives from this one constant.
+ */
+export const MILESTONES: readonly Milestone[] = [
+  { threshold: FIRST_MILESTONE_POINTS, id: "homeContent" },
+  { threshold: 1000, id: "basicIhut" },
+  { threshold: 3000, id: "premiumIhut" },
+  { threshold: 5000, id: "inStore" },
+];
+
+/** First milestone still ahead of `lifetimePoints`, or null past the last one. */
+export function getNextMilestone(lifetimePoints: number): Milestone | null {
+  return MILESTONES.find((milestone) => lifetimePoints < milestone.threshold) ?? null;
+}
+
+/** Community Home content modules are locked below 250 and unlocked at/above it. */
+export function isHomeContentUnlocked(lifetimePoints: number): boolean {
+  return lifetimePoints >= FIRST_MILESTONE_POINTS;
+}
+
+/** True only when a completion actually CROSSES 250 from below. */
+export function crossesFirstMilestone(previousLifetimePoints: number, pointsEarned: number): boolean {
+  return (
+    previousLifetimePoints < FIRST_MILESTONE_POINTS &&
+    previousLifetimePoints + pointsEarned >= FIRST_MILESTONE_POINTS
+  );
+}
+
 export interface ScenarioInput {
   /** Confirmed lifetime points before this completion. */
   previousLifetimePoints: number;
@@ -23,10 +66,15 @@ export interface ScenarioInput {
 export interface CompletionResult extends ScenarioInput {
   /** previousLifetimePoints + pointsEarned — never clamped, overshoot preserved. */
   updatedLifetimePoints: number;
-  /** True when updatedLifetimePoints >= FIRST_MILESTONE_POINTS. */
+  /**
+   * True only when THIS completion crossed the first (250) milestone from
+   * below. A member already at/above 250 never re-triggers the common unlock.
+   */
   crossedThreshold: boolean;
-  /** FIRST_MILESTONE_POINTS - updatedLifetimePoints, or null once the threshold is crossed. */
+  /** Points from updatedLifetimePoints to the next milestone, or null past the last one. */
   pointsRemaining: number | null;
+  /** The milestone `pointsRemaining` is counting toward, or null past the last one. */
+  nextMilestoneId: MilestoneId | null;
 }
 
 /**
@@ -36,23 +84,25 @@ export interface CompletionResult extends ScenarioInput {
 export function computeCompletion(input: ScenarioInput): CompletionResult {
   const { previousLifetimePoints, pointsEarned } = input;
   const updatedLifetimePoints = previousLifetimePoints + pointsEarned;
-  const crossedThreshold = updatedLifetimePoints >= FIRST_MILESTONE_POINTS;
+  const next = getNextMilestone(updatedLifetimePoints);
   return {
     previousLifetimePoints,
     pointsEarned,
     updatedLifetimePoints,
-    crossedThreshold,
-    pointsRemaining: crossedThreshold ? null : FIRST_MILESTONE_POINTS - updatedLifetimePoints,
+    crossedThreshold: crossesFirstMilestone(previousLifetimePoints, pointsEarned),
+    pointsRemaining: next ? next.threshold - updatedLifetimePoints : null,
+    nextMilestoneId: next ? next.id : null,
   };
 }
 
 export type ExperienceOutcome = "arm1" | "arm2" | "arm3" | "commonUnlock";
 
 /**
- * Routing rule (Section 4): a completion that reaches or exceeds the first
- * milestone ALWAYS bypasses the assigned experimental arm, regardless of
- * which arm the member is in. Only completions that stay below threshold
- * surface the member's assigned arm experience.
+ * Routing rule (Section 4): a completion that crosses the first milestone
+ * ALWAYS bypasses the assigned experimental arm, regardless of which arm the
+ * member is in. Every other completion — below 250, or already past it —
+ * surfaces the member's assigned arm experience, pointed at whichever
+ * milestone is next.
  */
 export function resolveOutcome(arm: Arm, result: CompletionResult): ExperienceOutcome {
   if (result.crossedThreshold) return "commonUnlock";

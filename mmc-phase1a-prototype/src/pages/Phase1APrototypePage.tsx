@@ -4,6 +4,8 @@ import { PhoneFrame } from "../components/PhoneFrame";
 import { CommunityHomeScreen } from "../components/CommunityHomeScreen";
 import { Phase1ABottomSheet } from "../components/Phase1ABottomSheet";
 import { ControlPanel } from "../components/ControlPanel";
+import { ScenarioDock } from "../components/ScenarioDock";
+import { isHomeContentUnlocked } from "../lib/phase1aEngine";
 import { useScenario, type SheetVisibility } from "../lib/useScenario";
 import { DEFAULT_DEVICE_PRESET_ID, getDevicePreset } from "../lib/devicePresets";
 
@@ -46,30 +48,35 @@ export function Phase1APrototypePage() {
     [scenario],
   );
 
+  const scenarioWithFocus = React.useMemo(() => ({ ...scenario, simulate }), [scenario, simulate]);
+
   return (
     <div className="phase1a-shell">
-      <div className="phase1a-stage">
-        <PhoneFrame device={device}>
-          <Page title="Member's Mark Community" titleVisuallyHidden>
-            <CommunityHomeScreen memberName={MEMBER_NAME} />
-          </Page>
-        </PhoneFrame>
+      <div className="phase1a-main">
+        <div className="phase1a-stage">
+          <PhoneFrame device={device}>
+            <Page title="Member's Mark Community" titleVisuallyHidden>
+              <CommunityHomeScreen
+                memberName={MEMBER_NAME}
+                contentUnlocked={isHomeContentUnlocked(scenario.previousLifetimePoints)}
+              />
+            </Page>
+          </PhoneFrame>
+        </div>
+
+        <Phase1ABottomSheet
+          variant={displayedVariant}
+          result={scenario.lastResult}
+          isOpen={scenario.sheet !== "none"}
+          onDismiss={handleDismiss}
+        />
+
+        <aside className="phase1a-controls" aria-label="Phase 1A prototype controls">
+          <ControlPanel scenario={scenarioWithFocus} deviceId={deviceId} onDeviceChange={setDeviceId} />
+        </aside>
       </div>
 
-      <Phase1ABottomSheet
-        variant={displayedVariant}
-        result={scenario.lastResult}
-        isOpen={scenario.sheet !== "none"}
-        onDismiss={handleDismiss}
-      />
-
-      <aside className="phase1a-controls" aria-label="Phase 1A prototype controls">
-        <ControlPanel
-          scenario={{ ...scenario, simulate }}
-          deviceId={deviceId}
-          onDeviceChange={setDeviceId}
-        />
-      </aside>
+      <ScenarioDock scenario={scenarioWithFocus} />
     </div>
   );
 }

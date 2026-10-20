@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Body, Button, Card, CardContent, Heading, Icon, IconButton } from "@walmart/ld-kit";
+import { Body, Button, Card, CardContent, Heading, Icon, IconButton, VisuallyHidden } from "@walmart/ld-kit";
 import { Illustration } from "@walmart/ld-kit/utils/Illustration";
 import { BottomNavBar } from "./BottomNavBar";
 
@@ -15,15 +15,31 @@ import { BottomNavBar } from "./BottomNavBar";
  * Home's activity counts to the simulated survey completion is out of scope
  * (see the "reversible assumptions" note in the prototype README/summary).
  */
-export function CommunityHomeScreen({ memberName }: { memberName: string }) {
+export function CommunityHomeScreen({
+  memberName,
+  contentUnlocked,
+}: {
+  memberName: string;
+  /** Lifetime points >= 250. Drives ONLY the lock state of the content modules below the fold. */
+  contentUnlocked: boolean;
+}) {
   return (
     <div style={{ display: "flex", flexDirection: "column", flex: "1 1 auto", minHeight: 0 }}>
       <HeaderBar />
-      <div style={{ flex: "1 1 auto", minHeight: 0, overflowY: "auto" }}>
+      {/* tabIndex=0: keyboard users must be able to scroll this region (a11y
+          rule for scrollable regions); aria-label names it for AT. */}
+      <div
+        className="phase1a-home-scroll"
+        tabIndex={0}
+        role="region"
+        aria-label="Community Home content"
+        style={{ flex: "1 1 auto", minHeight: 0, overflowY: "auto" }}
+      >
         <Hero memberName={memberName} />
         <div style={{ padding: "0 16px 32px" }}>
           <OpenActivitiesSection />
           <WhatsNewSection />
+          <ContentModulesSection unlocked={contentUnlocked} />
         </div>
       </div>
       <BottomNavBar activeId="account" />
@@ -172,6 +188,100 @@ function OpenActivitiesSection() {
           </Card>
         ))}
       </div>
+    </section>
+  );
+}
+
+/**
+ * Content modules that live below the fold on Home. Locked below 250
+ * lifetime points, unlocked at/above it (the benefit Arm 3 names).
+ *
+ * The locked state deliberately shows NO threshold, point count, or progress
+ * — only "Locked" — so Home itself never reveals the milestone and Arm 1 / 2
+ * stay uncontaminated (no persistent progress UI on Home). Module titles and
+ * blurbs are placeholder prototype content.
+ */
+const CONTENT_MODULES = [
+  {
+    id: "polls",
+    title: "Member polls",
+    description: "Vote on what Member’s Mark makes next.",
+    illustrationType: "mono-large" as const,
+    illustration: "Registry&Gifts" as const,
+  },
+  {
+    id: "behind-the-product",
+    title: "Behind the product",
+    description: "See how member feedback shaped new items.",
+    illustrationType: "mono-large" as const,
+    illustration: "PartySupplies" as const,
+  },
+  {
+    id: "stories",
+    title: "Member stories",
+    description: "Hear what other members are saying.",
+    illustrationType: "mono-small" as const,
+    illustration: "GiftCard" as const,
+  },
+];
+
+function ContentModulesSection({ unlocked }: { unlocked: boolean }) {
+  return (
+    <section aria-labelledby="content-modules-heading" style={{ marginTop: 32 }} data-unlocked={unlocked}>
+      <Heading as="h3" id="content-modules-heading" UNSAFE_style={{ marginBottom: 16 }}>
+        More from Community
+      </Heading>
+      <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+        {CONTENT_MODULES.map((module) => (
+          <li
+            key={module.id}
+            data-testid={`content-module-${module.id}`}
+            data-state={unlocked ? "unlocked" : "locked"}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              padding: 16,
+              borderRadius: "var(--ld-semantic-border-radius-card, 8px)",
+              border: "1px solid var(--ld-semantic-color-border-subtlest, #74767c)",
+              background: unlocked
+                ? "var(--ld-semantic-color-surface, #fff)"
+                : "var(--ld-semantic-color-surface-subtle, #f8f8f8)",
+              boxShadow: unlocked ? "var(--ld-semantic-elevation-100)" : "none",
+            }}
+          >
+            <div
+              style={{
+                flex: "0 0 72px",
+                height: 72,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "var(--ld-semantic-border-radius-card, 8px)",
+                background: "var(--ld-semantic-color-surface-subtle, #f8f8f8)",
+              }}
+            >
+              {unlocked ? (
+                <Illustration type={module.illustrationType} name={module.illustration} title={module.title} size={48} />
+              ) : (
+                <Icon name="Lock" decorative size="large" />
+              )}
+            </div>
+            <div style={{ flex: "1 1 auto", minWidth: 0, opacity: unlocked ? 1 : 0.7 }}>
+              <Heading as="h4" UNSAFE_style={{ fontSize: "1rem", margin: 0 }}>
+                {module.title}
+              </Heading>
+              <Body as="span" color="subtle" UNSAFE_style={{ display: "block", marginTop: 4 }}>
+                {unlocked ? module.description : "Locked"}
+              </Body>
+              {!unlocked && <VisuallyHidden>This content module is locked.</VisuallyHidden>}
+            </div>
+            {unlocked ? (
+              <Icon name="ChevronRight" decorative />
+            ) : null}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

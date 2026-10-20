@@ -7,6 +7,7 @@ import {
   simulateCompletion,
 } from "./phase1aEngine";
 import { logPhase1AEvent } from "./phase1aLogger";
+import { getScenarioPreset, type ScenarioId } from "./phase1aScenarios";
 
 export const DEFAULT_PREVIOUS_LIFETIME_POINTS = 90;
 export const DEFAULT_POINTS_EARNED = 10;
@@ -150,6 +151,7 @@ export function useScenario() {
         pointsEarned: result.pointsEarned,
         updatedLifetimePoints: result.updatedLifetimePoints,
         pointsRemaining: result.pointsRemaining,
+        nextMilestoneId: result.nextMilestoneId,
         crossedThreshold: false,
       });
     }
@@ -189,6 +191,22 @@ export function useScenario() {
     [state.sheet, state.assignedArm, state.lastResult],
   );
 
+  /**
+   * Jumps to a reviewer scenario band by seeding the member's current
+   * lifetime points. Keeps the assigned arm and points-earned input, and
+   * clears any open sheet / last result so the next completion starts clean.
+   */
+  const selectScenario = React.useCallback((id: ScenarioId) => {
+    const preset = getScenarioPreset(id);
+    setState((prev) => ({
+      ...prev,
+      previousLifetimePoints: preset.seedPoints,
+      sheet: "none",
+      lastResult: null,
+      completionCount: 0,
+    }));
+  }, []);
+
   const resetScenario = React.useCallback(() => {
     setState({
       assignedArm: DEFAULT_ARM,
@@ -207,6 +225,7 @@ export function useScenario() {
     setPointsEarnedInput,
     simulate,
     dismissSheet,
+    selectScenario,
     resetScenario,
   };
 }

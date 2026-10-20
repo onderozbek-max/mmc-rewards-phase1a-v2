@@ -39,9 +39,65 @@
 
 .phase1a-shell {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--ld-semantic-color-surface-subtle, #f8f8f8);
+}
+
+.phase1a-main {
+  display: flex;
+  flex-direction: row;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/*
+ * Why Home wasn't scrollable: LD's <Page> renders <main class="ld-page-main">
+ * as a plain block with min-height: 100vh. Inside the fixed-height phone
+ * screen that made <main> (and everything under it) taller than the phone,
+ * so Home's own overflow-y scroller never got a bounded height and the
+ * phone just clipped the overflow. Make <main> a bounded flex column that
+ * fills the space left under the status bar instead.
+ */
+.phase1a-phone-screen .ld-page-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  overflow: hidden;
+}
+
+/* Scenario selector docked to the bottom of the review page (prototype tooling). */
+.phase1a-dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  flex: none;
+  background: var(--ld-semantic-color-surface, #fff);
+  border-top: 1px solid var(--ld-semantic-color-border-subtlest, #74767c);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.phase1a-dock-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 24px;
+  padding: 12px 24px;
+  box-sizing: border-box;
+}
+
+.phase1a-dock-select {
+  flex: 1 1 420px;
+  min-width: 280px;
+}
+
+.phase1a-dock-status {
+  flex: 0 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .phase1a-stage {
@@ -64,7 +120,7 @@
 }
 
 @media (max-width: 56.25rem) {
-  .phase1a-shell {
+  .phase1a-main {
     flex-direction: column;
   }
   .phase1a-controls {

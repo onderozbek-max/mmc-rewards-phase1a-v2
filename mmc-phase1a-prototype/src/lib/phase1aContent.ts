@@ -9,7 +9,7 @@
  * and both entries are the same shape (two lines, same lead-in sentence).
  */
 
-import { pointsWord } from "./phase1aEngine";
+import { pointsWord, type MilestoneId } from "./phase1aEngine";
 
 export const FIRST_MILESTONE_POINTS = 250;
 
@@ -33,11 +33,32 @@ export const progressCopyByArm = {
     `${pointsRemaining} ${pointsWord(pointsRemaining)} to unlock`,
     "your next Community benefit.",
   ],
-  arm3: (pointsRemaining: number): [string, string] => [
+  arm3: (pointsRemaining: number, milestoneId: MilestoneId = "homeContent"): [string, string] => [
     `${pointsRemaining} ${pointsWord(pointsRemaining)} to unlock`,
-    "expanded Community Home content.",
+    `${milestoneBenefit[milestoneId].name}.`,
   ],
 } as const;
+
+/**
+ * What Arm 3 names at each milestone. Arm 2 never reads this table — it
+ * always says "your next Community benefit" — so the naming is the only
+ * thing that differs between the arms at every tier.
+ *
+ * `comingSoonNote` is a third line shown by Arm 3 only, for benefits that
+ * are announced at unlock but not yet live (IHUT eligibility, in-store).
+ */
+export const milestoneBenefit: Record<MilestoneId, { name: string; comingSoonNote: string | null }> = {
+  homeContent: { name: "expanded Community Home content", comingSoonNote: null },
+  basicIhut: { name: "basic IHUT eligibility", comingSoonNote: "Coming soon after unlock." },
+  premiumIhut: { name: "premium IHUT eligibility", comingSoonNote: "Coming soon after unlock." },
+  inStore: { name: "exclusive in-store benefits", comingSoonNote: "Coming soon." },
+};
+
+/** Optional third progress line. Arm 2 never has one. */
+export function progressNoteByArm(arm: "arm2" | "arm3", milestoneId: MilestoneId | null): string | null {
+  if (arm === "arm2" || milestoneId === null) return null;
+  return milestoneBenefit[milestoneId].comingSoonNote;
+}
 
 export const bottomSheetCtaLabel = "Got it";
 

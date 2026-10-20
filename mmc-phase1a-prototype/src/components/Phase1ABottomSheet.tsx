@@ -7,8 +7,9 @@ import {
   commonUnlock,
   lifetimeTotalLine,
   progressCopyByArm,
+  progressNoteByArm,
 } from "../lib/phase1aContent";
-import type { SimulationResult } from "../lib/phase1aEngine";
+import type { MilestoneId, SimulationResult } from "../lib/phase1aEngine";
 import type { SheetVisibility } from "../lib/useScenario";
 
 /**
@@ -42,10 +43,14 @@ export function Phase1ABottomSheet({
     ? commonUnlock.supportingLine(result.updatedLifetimePoints)
     : lifetimeTotalLine(result.updatedLifetimePoints);
   const ctaLabel = isCommonUnlock ? commonUnlock.ctaLabel : bottomSheetCtaLabel;
-  const progressLines =
-    !isCommonUnlock && result.pointsRemaining !== null
-      ? progressCopyByArm[variant === "arm3" ? "arm3" : "arm2"](result.pointsRemaining)
-      : null;
+  const armKey = variant === "arm3" ? "arm3" : "arm2";
+  const hasProgress = !isCommonUnlock && result.pointsRemaining !== null && result.nextMilestoneId !== null;
+  const progressLines = hasProgress
+    ? armKey === "arm3"
+      ? progressCopyByArm.arm3(result.pointsRemaining as number, result.nextMilestoneId as MilestoneId)
+      : progressCopyByArm.arm2(result.pointsRemaining as number)
+    : null;
+  const progressNote = hasProgress ? progressNoteByArm(armKey, result.nextMilestoneId) : null;
 
   return (
     <BottomSheet
@@ -68,13 +73,29 @@ export function Phase1ABottomSheet({
           {supportingLine}
         </Body>
         {/* Fixed-height region so Arm 2 / Arm 3 progress copy occupies identical
-            visual space (Section 6: "same fixed text region in both treatments"). */}
-        <div style={{ minHeight: 48, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            visual space (Section 6: "same fixed text region in both treatments").
+            Sized for three lines: Arm 3 adds a "Coming soon" note at the IHUT /
+            in-store tiers; Arm 2 leaves that line empty, same box either way. */}
+        <div
+          style={{
+            minHeight: 72,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 4,
+          }}
+        >
           {progressLines && (
             <Body as="p" weight="alt" UNSAFE_style={{ margin: 0 }}>
               {progressLines[0]}
               <br />
               {progressLines[1]}
+            </Body>
+          )}
+          {progressNote && (
+            <Body as="p" size="small" color="subtle" UNSAFE_style={{ margin: 0 }}>
+              {progressNote}
             </Body>
           )}
         </div>
