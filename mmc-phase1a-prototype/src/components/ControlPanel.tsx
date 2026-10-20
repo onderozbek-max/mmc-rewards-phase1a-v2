@@ -22,14 +22,41 @@ export function ControlPanel({
   onDeviceChange: (id: string) => void;
 }) {
   const events = usePhase1AEventLog();
-  const { lastResult } = scenario;
   const willCrossThreshold = crossesFirstMilestone(scenario.previousLifetimePoints, scenario.pointsEarnedInput);
 
   return (
     <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
+      <section className="phase1a-howto" aria-labelledby="phase1a-howto-heading">
+        <Heading as="h2" size="small" id="phase1a-howto-heading" UNSAFE_style={{ margin: 0 }}>
+          How to use this prototype
+        </Heading>
+        <ol>
+          <li>
+            <strong>Pick an arm</strong> below. It sets which experiment group the member is in: Arm 1 sees no
+            feedback, Arm 2 sees a vague &ldquo;next benefit&rdquo; message, Arm 3 sees the benefit named.
+          </li>
+          <li>
+            <strong>Choose a member scenario</strong> in the bar at the bottom of the page. It sets how many
+            lifetime points the member already has.
+          </li>
+          <li>
+            <strong>Scroll Home</strong> inside the phone to see the content modules. They are locked below 250
+            points and unlocked from 250.
+          </li>
+          <li>
+            <strong>Press &ldquo;Complete an activity&rdquo;</strong> to see what the member sees afterwards: points
+            earned, new total, and points left to the next milestone.
+          </li>
+          <li>
+            Crossing 250 points shows the same unlock message in every arm. Press <strong>Reset scenario</strong>{" "}
+            to start over.
+          </li>
+        </ol>
+      </section>
+
       <div>
         <Heading as="h2" size="small" UNSAFE_style={{ marginBottom: 4 }}>
-          Phase 1A prototype controls
+          Prototype controls
         </Heading>
         <Body as="p" color="subtle" size="small" UNSAFE_style={{ margin: 0 }}>
           Review tooling only — never shown inside the member experience.
@@ -129,33 +156,6 @@ export function ControlPanel({
 
       <div style={{ margin: "0 0" }}>
         <Divider />
-      </div>
-
-      <div>
-        <Body as="p" size="small" color="subtle" UNSAFE_style={{ marginBottom: 4 }}>
-          Last simulation
-        </Body>
-        {lastResult ? (
-          <Body as="div" size="small" UNSAFE_style={{ margin: 0, whiteSpace: "pre-wrap", fontFamily: "monospace" }}>
-            {JSON.stringify(
-              {
-                assignedArm: lastResult.assignedArm,
-                outcome: lastResult.outcome,
-                previousLifetimePoints: lastResult.previousLifetimePoints,
-                pointsEarned: lastResult.pointsEarned,
-                updatedLifetimePoints: lastResult.updatedLifetimePoints,
-                pointsRemaining: lastResult.pointsRemaining,
-                crossedThreshold: lastResult.crossedThreshold,
-              },
-              null,
-              2,
-            )}
-          </Body>
-        ) : (
-          <Body as="p" size="small" color="subtle" UNSAFE_style={{ margin: 0 }}>
-            No completion simulated yet.
-          </Body>
-        )}
       </div>
 
       <div>
