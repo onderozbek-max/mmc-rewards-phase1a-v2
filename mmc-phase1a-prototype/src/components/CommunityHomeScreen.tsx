@@ -38,7 +38,7 @@ export function CommunityHomeScreen({
         <Hero memberName={memberName} />
         <div style={{ padding: "0 16px 32px" }}>
           <OpenActivitiesSection />
-          <WhatsNewSection />
+          <WhatsNewSection unlocked={contentUnlocked} />
           <ContentModulesSection unlocked={contentUnlocked} />
         </div>
       </div>
@@ -291,9 +291,15 @@ const WHATS_NEW = [
   { id: "wood", title: "Crafted with care", illustrationType: "mono-large" as const, illustration: "PartySupplies" as const },
 ];
 
-function WhatsNewSection() {
+/**
+ * "What's new" content is a gated content module too: locked below 250
+ * lifetime points, unlocked at/above it. Locked tiles keep the exact same
+ * size and carousel layout so unlocking never shifts anything on Home; like
+ * the modules below, they show only "Locked" — no threshold or progress.
+ */
+function WhatsNewSection({ unlocked }: { unlocked: boolean }) {
   return (
-    <section aria-labelledby="whats-new-heading">
+    <section aria-labelledby="whats-new-heading" data-testid="whats-new" data-state={unlocked ? "unlocked" : "locked"}>
       <Heading as="h3" id="whats-new-heading" UNSAFE_style={{ marginBottom: 16 }}>
         What&rsquo;s new
       </Heading>
@@ -306,13 +312,27 @@ function WhatsNewSection() {
               borderRadius: "var(--ld-semantic-border-radius-card, 8px)",
               overflow: "hidden",
               background: "var(--ld-semantic-color-surface-subtle, #f8f8f8)",
+              border: unlocked ? "none" : "1px solid var(--ld-semantic-color-border-subtlest, #74767c)",
+              boxSizing: "border-box",
               aspectRatio: "4 / 3",
               display: "flex",
+              flexDirection: "column",
+              gap: 8,
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Illustration type={item.illustrationType} name={item.illustration} title={item.title} size={72} />
+            {unlocked ? (
+              <Illustration type={item.illustrationType} name={item.illustration} title={item.title} size={72} />
+            ) : (
+              <>
+                <Icon name="Lock" decorative size="large" />
+                <Body as="span" color="subtle">
+                  Locked
+                </Body>
+                <VisuallyHidden>This content module is locked.</VisuallyHidden>
+              </>
+            )}
           </div>
         ))}
       </div>
