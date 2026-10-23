@@ -2,6 +2,7 @@ import * as React from "react";
 import {
   type Arm,
   type ExperienceOutcome,
+  type PrototypeMode,
   type SimulationResult,
   isValidArm,
   simulateCompletion,
@@ -13,10 +14,13 @@ export const DEFAULT_PREVIOUS_LIFETIME_POINTS = 90;
 export const DEFAULT_POINTS_EARNED = 10;
 export const DEFAULT_ARM: Arm = 1;
 
-export type SheetVisibility = "none" | "arm2" | "arm3" | "commonUnlock";
+export const DEFAULT_MODE: PrototypeMode = "A";
+
+export type SheetVisibility = "none" | "arm2" | "arm3" | "commonUnlock" | "lightweight";
 
 export interface ScenarioSnapshot {
   assignedArm: Arm;
+  mode: PrototypeMode;
   previousLifetimePoints: number;
   pointsEarnedInput: number;
   sheet: SheetVisibility;
@@ -28,6 +32,7 @@ function readInitialStateFromUrl(): ScenarioSnapshot {
   if (typeof window === "undefined") {
     return {
       assignedArm: DEFAULT_ARM,
+      mode: DEFAULT_MODE,
       previousLifetimePoints: DEFAULT_PREVIOUS_LIFETIME_POINTS,
       pointsEarnedInput: DEFAULT_POINTS_EARNED,
       sheet: "none",
@@ -39,12 +44,14 @@ function readInitialStateFromUrl(): ScenarioSnapshot {
   const armRaw = params.get("arm");
   const previousRaw = params.get("previous");
   const earnedRaw = params.get("earned");
+  const modeRaw = params.get("mode");
   const armParam = armRaw === null ? NaN : Number(armRaw);
   const previousParam = previousRaw === null ? NaN : Number(previousRaw);
   const earnedParam = earnedRaw === null ? NaN : Number(earnedRaw);
 
   return {
     assignedArm: isValidArm(armParam) ? armParam : DEFAULT_ARM,
+    mode: modeRaw !== null && modeRaw.toUpperCase() === "B" ? "B" : DEFAULT_MODE,
     previousLifetimePoints: Number.isFinite(previousParam) && previousParam >= 0
       ? previousParam
       : DEFAULT_PREVIOUS_LIFETIME_POINTS,
@@ -65,10 +72,11 @@ function readInitialStateFromUrl(): ScenarioSnapshot {
  * until "Simulate confirmed RedJade return" is pressed, exactly like any
  * other scenario.
  */
-function syncUrl(snapshot: Pick<ScenarioSnapshot, "assignedArm" | "previousLifetimePoints" | "pointsEarnedInput">) {
+function syncUrl(snapshot: Pick<ScenarioSnapshot, "assignedArm" | "mode" | "previousLifetimePoints" | "pointsEarnedInput">) {
   if (typeof window === "undefined") return;
   const params = new URLSearchParams(window.location.search);
   params.set("arm", String(snapshot.assignedArm));
+  params.set("mode", snapshot.mode.toLowerCase());
   params.set("previous", String(snapshot.previousLifetimePoints));
   params.set("earned", String(snapshot.pointsEarnedInput));
   const nextUrl = `${window.location.pathname}?${params.toString()}`;
@@ -81,10 +89,20 @@ export function useScenario() {
   React.useEffect(() => {
     syncUrl(state);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.assignedArm, state.previousLifetimePoints, state.pointsEarnedInput]);
+  }, [state.assignedArm, state.mode, state.previousLifetimePoints, state.pointsEarnedInput]);
 
   const setAssignedArm = React.useCallback((arm: Arm) => {
     setState((prev) => ({ ...prev, assignedArm: arm }));
+  }, []);
+
+  /**
+   * Switches the prototype between Option A and Option B. Touches ONLY the
+   * mode (and closes an open sheet, whose copy belongs to the old mode) —
+   * the member's lifetime points, last result and completion count are
+   * deliberately left alone so a presenter can flip back and forth.
+   */
+  const setMode = React.useCallback((mode: PrototypeMode) => {
+    setState((prev) => (prev.mode === mode ? prev : { ...prev, mode, sheet: "none" }));
   }, []);
 
   const setPreviousLifetimePoints = React.useCallback((value: number) => {
@@ -112,12 +130,13 @@ export function useScenario() {
    */
   const simulate = React.useCallback(() => {
     const result = simulateCompletion(
-      { assignedArm: state.assignedArm, previousLifetimePoints: state.previousLifetimePoints },
+      { assignedArm: state.assignedArm, previousLifetimePoints: state.previousLifetimePoints, mode: state.mode },
       state.pointsEarnedInput,
     );
 
     logPhase1AEvent("confirmed_survey_return_simulated", {
       assignedArm: state.assignedArm,
+      mode: state.mode,
       previousLifetimePoints: result.previousLifetimePoints,
       pointsEarned: result.pointsEarned,
       updatedLifetimePoints: result.updatedLifetimePoints,
@@ -147,11 +166,23 @@ export function useScenario() {
     } else if (sheet === "arm2" || sheet === "arm3") {
       logPhase1AEvent("phase_1a_bottom_sheet_impression", {
         assignedArm: state.assignedArm,
+        mode: state.mode,
         previousLifetimePoints: result.previousLifetimePoints,
         pointsEarned: result.pointsEarned,
         updatedLifetimePoints: result.updatedLifetimePoints,
         pointsRemaining: result.pointsRemaining,
         nextMilestoneId: result.nextMilestoneId,
+        crossedThreshold: false,
+      });
+    } else if (sheet === "lightweight") {
+      // Option B past 250: no milestone data is shown, so none is logged.
+      logPhase1AEvent("phase_1a_bottom_sheet_impression", {
+        assignedArm: state.assignedArm,
+        mode: state.mode,
+        previousLifetimePoints: result.previousLifetimePoints,
+        pointsEarned: result.pointsEarned,
+        updatedLifetimePoints: result.updatedLifetimePoints,
+        pointsRemaining: null,
         crossedThreshold: false,
       });
     }
@@ -163,7 +194,7 @@ export function useScenario() {
       lastResult: result,
       completionCount: prev.completionCount + 1,
     }));
-  }, [state.assignedArm, state.previousLifetimePoints, state.pointsEarnedInput]);
+  }, [state.assignedArm, state.mode, state.previousLifetimePoints, state.pointsEarnedInput]);
 
   const dismissSheet = React.useCallback(
     (reason: "cta" | "close") => {
@@ -181,7 +212,7 @@ export function useScenario() {
         logPhase1AEvent("phase_1a_bottom_sheet_dismissed", {
           assignedArm: state.assignedArm,
           updatedLifetimePoints: state.lastResult?.updatedLifetimePoints,
-          pointsRemaining: state.lastResult?.pointsRemaining,
+          pointsRemaining: state.sheet === "lightweight" ? null : state.lastResult?.pointsRemaining,
           crossedThreshold: false,
         });
       }
@@ -196,26 +227,31 @@ export function useScenario() {
    * lifetime points. Keeps the assigned arm and points-earned input, and
    * clears any open sheet / last result so the next completion starts clean.
    */
-  const selectScenario = React.useCallback((id: ScenarioId) => {
-    const preset = getScenarioPreset(id);
+  const seedPoints = React.useCallback((points: number) => {
     setState((prev) => ({
       ...prev,
-      previousLifetimePoints: preset.seedPoints,
+      previousLifetimePoints: Math.max(0, Math.round(points)),
       sheet: "none",
       lastResult: null,
       completionCount: 0,
     }));
   }, []);
 
+  const selectScenario = React.useCallback(
+    (id: ScenarioId) => seedPoints(getScenarioPreset(id).seedPoints),
+    [seedPoints],
+  );
+
   const resetScenario = React.useCallback(() => {
-    setState({
+    setState((prev) => ({
       assignedArm: DEFAULT_ARM,
+      mode: prev.mode, // the option being demoed is presenter state, not scenario state
       previousLifetimePoints: DEFAULT_PREVIOUS_LIFETIME_POINTS,
       pointsEarnedInput: DEFAULT_POINTS_EARNED,
       sheet: "none",
       lastResult: null,
       completionCount: 0,
-    });
+    }));
   }, []);
 
   return {
@@ -226,7 +262,9 @@ export function useScenario() {
     simulate,
     dismissSheet,
     selectScenario,
+    seedPoints,
     resetScenario,
+    setMode,
   };
 }
 

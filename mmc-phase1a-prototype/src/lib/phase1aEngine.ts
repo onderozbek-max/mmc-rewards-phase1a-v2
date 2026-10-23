@@ -10,6 +10,15 @@
 
 export type Arm = 1 | 2 | 3;
 
+/**
+ * Prototype mode (comparison of two implementation options):
+ *  - "A" — Full Progression: the sheet keeps counting toward every milestone.
+ *  - "B" — 250-Point Only: identical to A until a member passes 250; after
+ *    that the sheet only reports points earned + lifetime total and says new
+ *    milestones are coming soon. Module locking / the 250 unlock are shared.
+ */
+export type PrototypeMode = "A" | "B";
+
 /** The first real Community benefit unlocks at this confirmed lifetime total. */
 export const FIRST_MILESTONE_POINTS = 250;
 
@@ -95,7 +104,7 @@ export function computeCompletion(input: ScenarioInput): CompletionResult {
   };
 }
 
-export type ExperienceOutcome = "arm1" | "arm2" | "arm3" | "commonUnlock";
+export type ExperienceOutcome = "arm1" | "arm2" | "arm3" | "commonUnlock" | "lightweight";
 
 /**
  * Routing rule (Section 4): a completion that crosses the first milestone
@@ -104,9 +113,16 @@ export type ExperienceOutcome = "arm1" | "arm2" | "arm3" | "commonUnlock";
  * surfaces the member's assigned arm experience, pointed at whichever
  * milestone is next.
  */
-export function resolveOutcome(arm: Arm, result: CompletionResult): ExperienceOutcome {
+export function resolveOutcome(
+  arm: Arm,
+  result: CompletionResult,
+  mode: PrototypeMode = "A",
+): ExperienceOutcome {
   if (result.crossedThreshold) return "commonUnlock";
   if (arm === 1) return "arm1";
+  // Option B, member already past 250: simplified sheet, same for Arm 2 and
+  // Arm 3 (naming any later benefit would expose the ladder Option B hides).
+  if (mode === "B" && result.previousLifetimePoints >= FIRST_MILESTONE_POINTS) return "lightweight";
   if (arm === 2) return "arm2";
   return "arm3";
 }
@@ -116,10 +132,13 @@ export interface ScenarioState {
   assignedArm: Arm;
   /** Confirmed lifetime points as of right now (updates after each simulated completion). */
   previousLifetimePoints: number;
+  /** Prototype mode; omitted means Option A. */
+  mode?: PrototypeMode;
 }
 
 export interface SimulationResult extends CompletionResult {
   assignedArm: Arm;
+  mode: PrototypeMode;
   outcome: ExperienceOutcome;
 }
 
@@ -137,7 +156,8 @@ export function simulateCompletion(state: ScenarioState, pointsEarned: number): 
   return {
     ...result,
     assignedArm: state.assignedArm,
-    outcome: resolveOutcome(state.assignedArm, result),
+    mode: state.mode ?? "A",
+    outcome: resolveOutcome(state.assignedArm, result, state.mode ?? "A"),
   };
 }
 

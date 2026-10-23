@@ -3,6 +3,7 @@ import {
   bottomSheetHeadline,
   commonUnlock,
   lifetimeTotalLine,
+  lightweightProgressLine,
   milestoneBenefit,
   progressCopyByArm,
   progressNoteByArm,
@@ -78,5 +79,15 @@ describe("Per-milestone Arm 2 vs Arm 3 copy", () => {
     expect(progressNoteByArm("arm3", "premiumIhut")).toBe("Coming soon after unlock.");
     expect(progressNoteByArm("arm3", "inStore")).toBe("Coming soon.");
     expect(progressNoteByArm("arm3", null)).toBeNull();
+  });
+});
+
+describe("Option B lightweight sheet copy", () => {
+  it("only says new milestones are coming soon — no thresholds, benefits, or remaining counts", () => {
+    const text = [bottomSheetHeadline(50), lifetimeTotalLine(370), lightweightProgressLine].join(" ");
+    expect(text).toBe("You earned 50 points You now have 370 lifetime points. New milestones coming soon.");
+    for (const forbidden of ["1000", "1,000", "3000", "3,000", "IHUT", "in-store", "to unlock", "remaining"]) {
+      expect(text).not.toContain(forbidden);
+    }
   });
 });

@@ -6,6 +6,7 @@ import {
   bottomSheetHeadline,
   commonUnlock,
   lifetimeTotalLine,
+  lightweightProgressLine,
   progressCopyByArm,
   progressNoteByArm,
 } from "../lib/phase1aContent";
@@ -38,13 +39,16 @@ export function Phase1ABottomSheet({
   if (!result) return null;
 
   const isCommonUnlock = variant === "commonUnlock";
+  // Option B past 250: points earned + lifetime total + one "coming soon" line.
+  // Deliberately reads NOTHING from result.pointsRemaining / nextMilestoneId.
+  const isLightweight = variant === "lightweight";
   const headline = isCommonUnlock ? commonUnlock.headline : bottomSheetHeadline(result.pointsEarned);
   const supportingLine = isCommonUnlock
     ? commonUnlock.supportingLine(result.updatedLifetimePoints)
     : lifetimeTotalLine(result.updatedLifetimePoints);
   const ctaLabel = isCommonUnlock ? commonUnlock.ctaLabel : bottomSheetCtaLabel;
   const armKey = variant === "arm3" ? "arm3" : "arm2";
-  const hasProgress = !isCommonUnlock && result.pointsRemaining !== null && result.nextMilestoneId !== null;
+  const hasProgress = !isCommonUnlock && !isLightweight && result.pointsRemaining !== null && result.nextMilestoneId !== null;
   const progressLines = hasProgress
     ? armKey === "arm3"
       ? progressCopyByArm.arm3(result.pointsRemaining as number, result.nextMilestoneId as MilestoneId)
@@ -91,6 +95,11 @@ export function Phase1ABottomSheet({
               {progressLines[0]}
               <br />
               {progressLines[1]}
+            </Body>
+          )}
+          {isLightweight && (
+            <Body as="p" weight="alt" UNSAFE_style={{ margin: 0 }}>
+              {lightweightProgressLine}
             </Body>
           )}
           {progressNote && (

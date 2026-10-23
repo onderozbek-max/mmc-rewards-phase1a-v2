@@ -170,3 +170,45 @@ describe("milestone ladder — scenario bands", () => {
     expect(simulateCompletion({ assignedArm: 2, previousLifetimePoints: 3200 }, 10).pointsRemaining).toBe(1790);
   });
 });
+
+describe("Option B — 250-point only", () => {
+  const sim = (arm: 1 | 2 | 3, previous: number, earned: number, mode: "A" | "B") =>
+    simulateCompletion({ assignedArm: arm, previousLifetimePoints: previous, mode }, earned);
+
+  it("is identical to Option A below 250 for every arm (outcome and numbers)", () => {
+    for (const arm of [1, 2, 3] as const) {
+      for (const previous of [0, 90, 150, 240]) {
+        const a = sim(arm, previous, 5, "A");
+        const b = sim(arm, previous, 5, "B");
+        expect({ ...b, mode: "A" }).toEqual(a);
+      }
+    }
+  });
+
+  it("keeps the common 250 unlock in both options when a completion crosses 250", () => {
+    for (const arm of [1, 2, 3] as const) {
+      expect(sim(arm, 240, 10, "A").outcome).toBe("commonUnlock");
+      expect(sim(arm, 240, 10, "B").outcome).toBe("commonUnlock");
+    }
+  });
+
+  it("routes Arm 2 and Arm 3 to the lightweight sheet past 250, and Arm 1 to nothing", () => {
+    for (const previous of [320, 1200, 3200]) {
+      expect(sim(2, previous, 50, "B").outcome).toBe("lightweight");
+      expect(sim(3, previous, 50, "B").outcome).toBe("lightweight");
+      expect(sim(1, previous, 50, "B").outcome).toBe("arm1");
+    }
+  });
+
+  it("leaves Option A past 250 untouched (still full progression)", () => {
+    expect(sim(2, 320, 50, "A").outcome).toBe("arm2");
+    expect(sim(3, 320, 50, "A").outcome).toBe("arm3");
+    expect(sim(3, 320, 50, "A").pointsRemaining).toBe(630);
+  });
+
+  it("defaults to Option A when no mode is given", () => {
+    const result = simulateCompletion({ assignedArm: 3, previousLifetimePoints: 320 }, 50);
+    expect(result.mode).toBe("A");
+    expect(result.outcome).toBe("arm3");
+  });
+});

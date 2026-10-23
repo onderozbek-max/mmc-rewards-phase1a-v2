@@ -149,6 +149,14 @@
   }
 }
 
+/* Option A / B switch — the most prominent control in the side panel. */
+.phase1a-mode {
+  padding: 14px 16px;
+  border-radius: var(--ld-semantic-border-radius-card, 8px);
+  border: 2px solid var(--ld-semantic-color-fill-brand, #0053e2);
+  background: var(--ld-semantic-color-surface, #fff);
+}
+
 /* Plain-language how-to at the top of the control panel. */
 .phase1a-howto {
   padding: 14px 16px;
@@ -158,6 +166,7 @@
 }
 
 .phase1a-howto ol {
+  list-style: decimal;
   margin: 8px 0 0;
   padding-left: 20px;
   display: flex;

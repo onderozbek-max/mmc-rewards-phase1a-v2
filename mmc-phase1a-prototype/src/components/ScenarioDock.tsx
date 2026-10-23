@@ -18,7 +18,9 @@ export function ScenarioDock({ scenario }: { scenario: UseScenarioReturn }) {
   const points = scenario.previousLifetimePoints;
   const activeId = scenarioForPoints(points);
   const unlocked = isHomeContentUnlocked(points);
-  const next = getNextMilestone(points);
+  // Option B never surfaces milestones beyond 250 — keep the presenter readout
+  // consistent with what the member is shown in that mode.
+  const next = scenario.mode === "B" && unlocked ? null : getNextMilestone(points);
   const earned = scenario.pointsEarnedInput;
 
   return (
@@ -68,7 +70,9 @@ export function ScenarioDock({ scenario }: { scenario: UseScenarioReturn }) {
           <Body as="p" size="small" UNSAFE_style={{ margin: "6px 0 0" }}>
             {next
               ? `${(next.threshold - points).toLocaleString()} to go: ${milestoneBenefit[next.id].name} at ${next.threshold.toLocaleString()}`
-              : "Past the last milestone"}
+              : scenario.mode === "B"
+                ? "Option B: no further milestones shown"
+                : "Past the last milestone"}
           </Body>
         </div>
 

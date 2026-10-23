@@ -2,10 +2,13 @@ import * as React from "react";
 import { Body, Button, Divider, FormGroup, Heading, Radio, SegmentedControl, TextField } from "@walmart/ld-kit";
 import type { Arm } from "../lib/phase1aEngine";
 import { crossesFirstMilestone } from "../lib/phase1aEngine";
-import { commonUnlockControlLabel } from "../lib/phase1aContent";
+import { commonUnlockControlLabel, modeLabels } from "../lib/phase1aContent";
 import { DEVICE_PRESETS } from "../lib/devicePresets";
 import type { UseScenarioReturn } from "../lib/useScenario";
 import { usePhase1AEventLog } from "../lib/usePhase1AEventLog";
+
+/** Presenter shortcuts: below 250, just below the unlock, just past it, and above 1,000. */
+const QUICK_MEMBER_PRESETS = [{ points: 150 }, { points: 240 }, { points: 320 }, { points: 1200 }] as const;
 
 /**
  * Prototype-only review controls (Section 9) — intentionally rendered
@@ -26,11 +29,42 @@ export function ControlPanel({
 
   return (
     <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 24 }}>
+      <section className="phase1a-mode" aria-labelledby="phase1a-mode-heading">
+        <Heading as="h2" size="small" id="phase1a-mode-heading" UNSAFE_style={{ margin: "0 0 8px" }}>
+          Prototype option
+        </Heading>
+        <FormGroup label="Show the member experience for">
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <Radio
+              name="phase1a-mode"
+              value="A"
+              checked={scenario.mode === "A"}
+              onChange={() => scenario.setMode("A")}
+              label={modeLabels.A.label}
+            />
+            <Radio
+              name="phase1a-mode"
+              value="B"
+              checked={scenario.mode === "B"}
+              onChange={() => scenario.setMode("B")}
+              label={modeLabels.B.label}
+            />
+          </div>
+        </FormGroup>
+        <Body as="p" size="small" color="subtle" UNSAFE_style={{ margin: "8px 0 0" }}>
+          {modeLabels[scenario.mode].description} Switching keeps the member&rsquo;s points.
+        </Body>
+      </section>
+
       <section className="phase1a-howto" aria-labelledby="phase1a-howto-heading">
         <Heading as="h2" size="small" id="phase1a-howto-heading" UNSAFE_style={{ margin: 0 }}>
           How to use this prototype
         </Heading>
         <ol>
+          <li>
+            <strong>Pick an option</strong> above. Option A keeps showing progress after 250 points; Option B stops
+            at 250 and only says new milestones are coming soon.
+          </li>
           <li>
             <strong>Pick an arm</strong> below. It sets which experiment group the member is in: Arm 1 sees no
             feedback, Arm 2 sees a vague &ldquo;next benefit&rdquo; message, Arm 3 sees the benefit named.
@@ -103,6 +137,19 @@ export function ControlPanel({
           onChange={(event) => scenario.setPointsEarnedInput(Number(event.target.value))}
         />
       </div>
+
+      <FormGroup label="Quick member presets">
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {QUICK_MEMBER_PRESETS.map((preset) => (
+            <Button key={preset.points} variant="secondary" size="small" onClick={() => scenario.seedPoints(preset.points)}>
+              {preset.points.toLocaleString()} pts
+            </Button>
+          ))}
+        </div>
+        <Body as="p" size="small" color="subtle" UNSAFE_style={{ margin: "6px 0 0" }}>
+          Sets the member&rsquo;s lifetime points: well below, just below, just past, and well past 250.
+        </Body>
+      </FormGroup>
 
       <div
         style={{

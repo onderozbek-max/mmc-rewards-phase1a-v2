@@ -9,7 +9,7 @@
  * and both entries are the same shape (two lines, same lead-in sentence).
  */
 
-import { pointsWord, type MilestoneId } from "./phase1aEngine";
+import { pointsWord, type MilestoneId, type PrototypeMode } from "./phase1aEngine";
 
 export const FIRST_MILESTONE_POINTS = 250;
 
@@ -79,3 +79,19 @@ export const commonUnlock = {
 
 /** Label shown in prototype-only controls — never inside the member-facing UI. */
 export const commonUnlockControlLabel = "Common 250 unlock — outside experiment";
+
+/** Option B, member already past 250: the only progression line shown. */
+export const lightweightProgressLine = "New milestones coming soon.";
+
+/** Prototype-only labels for the mode switch — never shown inside the member UI. */
+export const modeLabels: Record<PrototypeMode, { label: string; description: string }> = {
+  A: {
+    label: "Option A — Full Progression",
+    description: "After 250 points, each survey keeps showing progress toward the next milestone.",
+  },
+  B: {
+    label: "Option B — 250-Point Only",
+    description:
+      "Same as A below 250. After 250, each survey only shows points earned, lifetime total, and “New milestones coming soon.”",
+  },
+};
